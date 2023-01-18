@@ -7,6 +7,8 @@ from django.urls import re_path
 from django.views.generic import RedirectView
 
 from ureport.api.views import (
+    CategoryDetails,
+    CategoryList,
     DashBlockDetails,
     DashBlockList,
     FeaturedPollList,
@@ -45,4 +47,6 @@ urlpatterns = [
     re_path(r"^dashblocks/(?P<pk>[\d]+)/$", DashBlockDetails.as_view(), name="api.v1.dashblock_details"),
     re_path(r"^stories/org/(?P<org>[\d]+)/$", StoryList.as_view(), name="api.v1.org_story_list"),
     re_path(r"^stories/(?P<pk>[\d]+)/$", StoryDetails.as_view(), name="api.v1.story_details"),
+    re_path(r"^categories/org/(?P<org>[\d]+)/$", CategoryList.as_view(), name="api.v1.org_category_list"),
+    re_path(r"^categories/(?P<pk>[\d]+)/$", CategoryDetails.as_view(), name="api.v1.category_details"),
 ]

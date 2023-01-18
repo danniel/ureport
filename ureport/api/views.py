@@ -5,10 +5,12 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from django.db.models import Q
 
+from dash.categories.models import Category
 from dash.dashblocks.models import DashBlock
 from dash.orgs.models import Org
 from dash.stories.models import Story
 from ureport.api.serializers import (
+    CategoryExtendedReadSerializer,
     DashblockReadSerializer,
     ImageReadSerializer,
     NewsItemReadSerializer,
@@ -1086,3 +1088,100 @@ class DashBlockDetails(RetrieveAPIView):
     serializer_class = DashblockReadSerializer
     model = DashBlock
     queryset = DashBlock.objects.filter(is_active=True)
+
+
+class CategoryList(ListAPIView):
+    """
+    This endpoint allows you to list category items.
+
+    ## Listing category items
+
+    By making a ```GET``` request you can list all the category items for an organization, filtering them as needed.  Each
+    category item has the following attributes:
+
+    * **id** - the ID of the item (int)
+    # TODO
+
+    Example:
+
+        GET /api/v1/categories/org/1/
+
+    Response is the list of category items of the organisation:
+
+        {
+            "count": 1,
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "id": 1,
+                    "name": "Category name",
+                    "image_url": null,
+                    "created_on": "2023-01-13T15:19:30.870147+02:00",
+                    "stories": [
+                        {
+                            "id": 1,
+                            "title": "Story title",
+                            "featured": false,
+                            "summary": "Story summary",
+                            "video_id": "k8Ap-fHt1_s",
+                            "audio_link": null,
+                            "tags": " tag1 tag2 ",
+                            "images": [],
+                            "created_on": "2023-01-13T15:19:30.870147+02:00"
+                        },
+                        ...
+                    ]
+                },
+                ...
+            ]
+        }
+    """
+
+    serializer_class = CategoryExtendedReadSerializer
+    model = Category
+
+    def get_queryset(self):
+        q = self.model.objects.filter(is_active=True).order_by("name")
+        if self.kwargs.get("org", None):
+            q = q.filter(org_id=self.kwargs.get("org"))
+        return q
+
+
+
+class CategoryDetails(RetrieveAPIView):
+    """
+    This endpoint allows you to get a single category item
+
+    ## A single category item
+    Example:
+
+        GET /api/v1/categories/1/
+
+    Response is a single category item:
+
+        {
+            "id": 1,
+            "name": "Category name",
+            "image_url": null,
+            "created_on": "2023-01-13T15:19:30.870147+02:00",
+            "org": 1,
+            "stories": [
+                {
+                    "id": 1,
+                    "title": "Story title",
+                    "featured": false,
+                    "summary": "Story summary",
+                    "video_id": "k8Ap-fHt1_s",
+                    "audio_link": null,
+                    "tags": " tag1 tag2 ",
+                    "images": [],
+                    "created_on": "2023-01-13T15:19:30.870147+02:00"
+                },
+                ...
+            ]
+        }
+    """
+
+    serializer_class = CategoryExtendedReadSerializer
+    queryset = Category.objects.filter(is_active=True).order_by("name")

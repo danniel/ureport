@@ -269,3 +269,11 @@ class DashblockReadSerializer(serializers.ModelSerializer):
             "video_id",
             "tags",
         )
+
+
+class CategoryExtendedReadSerializer(CategoryReadSerializer):
+    stories = StoryReadSerializer(many=True)
+
+    class Meta:
+        model = Category
+        fields = ("image_url", "name", "created_on", "modified_on", "stories")
