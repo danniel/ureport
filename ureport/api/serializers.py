@@ -272,7 +272,7 @@ class DashblockReadSerializer(serializers.ModelSerializer):
 
 
 class CategoryExtendedReadSerializer(CategoryReadSerializer):
-    stories = StoryReadSerializer(many=True)
+    stories = StoryReadSerializer(source="story_set", many=True)
 
     class Meta:
         model = Category
