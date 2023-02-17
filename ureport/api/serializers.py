@@ -146,6 +146,24 @@ class StoryReadSerializer(serializers.ModelSerializer):
         )
 
 
+class StoryShortReadSerializer(StoryReadSerializer):
+    class Meta:
+        model = Story
+        fields = (
+            "id",
+            "title",
+            "featured",
+            "summary",
+            "video_id",
+            "audio_link",
+            "tags",
+            "org",
+            "images",
+            "category",
+            "created_on",
+        )
+
+
 class PollReadSerializer(serializers.ModelSerializer):
     category = CategoryReadSerializer()
     questions = SerializerMethodField()
@@ -272,7 +290,7 @@ class DashblockReadSerializer(serializers.ModelSerializer):
 
 
 class CategoryExtendedReadSerializer(CategoryReadSerializer):
-    stories = StoryReadSerializer(source="story_set", many=True)
+    stories = StoryShortReadSerializer(source="story_set", many=True)
 
     class Meta:
         model = Category
