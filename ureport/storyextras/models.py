@@ -38,3 +38,27 @@ class StoryRating(StoryUserModel):
 
     class Meta:
         unique_together = ['story', 'user']
+
+
+class StoryRead(StoryUserModel):
+    """ Save the date when the user first read a story """
+
+    class Meta:
+        unique_together = ['story', 'user']
+
+
+class StoryPointsValue(models.Model):
+    story = models.OneToOneField(Story)
+    points_value = models.PositiveSmallIntegerField(default=0, blank=False, null=False)
+
+
+class StoryPoints(StoryUserModel):
+    """ Points received by an user for reading a story """
+
+    points = models.PositiveSmallIntegerField(
+        verbose_name=_("Points"),
+        default=0, blank=False, null=False
+    )
+
+    class Meta:
+        unique_together = ['story', 'user']

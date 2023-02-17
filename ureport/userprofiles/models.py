@@ -16,7 +16,7 @@ class UserProfile(models.Model):
         User, verbose_name=_("User"), blank=False, null=False, on_delete=models.CASCADE,
         primary_key=True)
     
-    # We do not use a ForeginKey because there can be several Contacts with
+    # We do not use a ForeignKey because there can be several "Contacts" with
     # the same imported UUID but assigned to different Orgs
     contact_uuid = models.CharField(
         verbose_name=_("Contact UUID"), max_length=36, blank=True, null=False, default="",

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.response import Response
 
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from dash.categories.models import Category
 from dash.dashblocks.models import DashBlock
@@ -18,10 +21,13 @@ from ureport.api.serializers import (
     PollReadSerializer,
     StoryReadSerializer,
     VideoReadSerializer,
+    StoryBookmarkSerializer,
+    StoryRatingSerializer,
 )
 from ureport.assets.models import Image
 from ureport.news.models import NewsItem, Video
 from ureport.polls.models import Poll
+from ureport.storyextras.models import StoryBookmark, StoryRating
 
 
 class OrgList(ListAPIView):
@@ -970,6 +976,18 @@ class StoryDetails(RetrieveAPIView):
 
     serializer_class = StoryReadSerializer
     queryset = Story.objects.filter(is_active=True).filter(Q(attachment="") | Q(attachment=None))
+
+    @action(detail=True, methods=['get'])
+    def bookmarks(self, request):
+        story = self.get_object()
+        bmarks = StoryBookmark.objects.filter(story=story).all()
+        page = self.paginate_queryset(bmarks)
+        if page is not None:
+            serializer = StoryBookmarkSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = StoryBookmarkSerializer(bmarks, many=True)
+        return Response(serializer.data)
 
 
 class DashBlockList(BaseListAPIView):
