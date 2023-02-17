@@ -159,7 +159,6 @@ class StoryShortReadSerializer(StoryReadSerializer):
             "tags",
             "org",
             "images",
-            "category",
             "created_on",
         )
 
