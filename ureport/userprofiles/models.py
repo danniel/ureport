@@ -24,7 +24,7 @@ class UserProfile(models.Model):
 
     image = models.ImageField(
         verbose_name=_("Image"), 
-        upload_to=partial(generate_file_path, "userprofile"), 
+        upload_to=partial(generate_file_path, "userprofiles"), 
         help_text=_("The profile image file to use"))
 
     password_reset_code = models.CharField(
@@ -37,4 +37,5 @@ class UserProfile(models.Model):
         help_text=_("Expiration date for the password reset"))
 
     class Meta:
-        pass
+        verbose_name = _("User profile")
+        verbose_name_plural = _("Use profiles")

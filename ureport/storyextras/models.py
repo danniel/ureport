@@ -6,8 +6,23 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
+class StorySettings(models.Model):
+    """ Various settings per Story """
+    
+    story = models.OneToOneField(
+        Story,
+        verbose_name=_("Story"))
+    reward_points = models.PositiveSmallIntegerField(
+        verbose_name=_("Reward points"),
+        default=0, blank=False, null=False)
+
+    class Meta:
+        verbose_name = _("Story settings")
+        verbose_name_plural = _("Story settings")
+
+
 class StoryUserModel(models.Model):
-    """ Common fields for various user data about specific stories """
+    """ Common fields for keeping user data about specific stories """
     
     story = models.ForeignKey(
         Story, verbose_name=_("Story"), blank=False, null=False, on_delete=models.CASCADE)
@@ -24,6 +39,8 @@ class StoryBookmark(StoryUserModel):
     """ An user bookmark flag for a specific story """
 
     class Meta:
+        verbose_name = _("Story bookmark")
+        verbose_name_plural = _("Story bookmarks")
         unique_together = ['story', 'user']
 
 
@@ -37,6 +54,8 @@ class StoryRating(StoryUserModel):
     )
 
     class Meta:
+        verbose_name = _("Story rating")
+        verbose_name_plural = _("Story ratings")
         unique_together = ['story', 'user']
 
 
@@ -44,16 +63,13 @@ class StoryRead(StoryUserModel):
     """ Save the date when the user first read a story """
 
     class Meta:
+        verbose_name = _("Story read")
+        verbose_name_plural = _("Story reads")
         unique_together = ['story', 'user']
 
 
-class StoryPointsValue(models.Model):
-    story = models.OneToOneField(Story)
-    points_value = models.PositiveSmallIntegerField(default=0, blank=False, null=False)
-
-
-class StoryPoints(StoryUserModel):
-    """ Points received by an user for reading a story """
+class StoryReward(StoryUserModel):
+    """ Reward points received by an user for reading a story """
 
     points = models.PositiveSmallIntegerField(
         verbose_name=_("Points"),
@@ -61,4 +77,6 @@ class StoryPoints(StoryUserModel):
     )
 
     class Meta:
+        verbose_name = _("Story reward")
+        verbose_name_plural = _("Story rewards")
         unique_together = ['story', 'user']
