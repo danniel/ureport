@@ -34,6 +34,9 @@ class StoryBookmarkViewSet(ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
     def list_for_user(self, request, user_id):
+        """
+        List all bookmarked stories for the URL user
+        """
         queryset = self.model.objects.filter(user_id=user_id)
         serializer_context = {"request": request}
         serializer = StoryBookmarkForUserSerializer(queryset, many=True, context=serializer_context)
@@ -41,12 +44,18 @@ class StoryBookmarkViewSet(ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='story/(?P<story_id>[\d]+)')
     def list_for_story(self, request, story_id):
+        """
+        List all bookmark users for the URL story
+        """
         queryset = self.model.objects.filter(story_id=story_id)
         serializer = StoryBookmarkForStorySerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['delete'], url_path='story/(?P<story_id>[\d]+)')
     def remove_bookmark(self, request, story_id):
+        """
+        Remove any bookmarks for the current story for the authenticated user
+        """
         count = StoryBookmark.objects.filter(
             story_id=story_id,
             user_id=request.user.id
@@ -55,6 +64,9 @@ class StoryBookmarkViewSet(ModelViewSet):
 
     @action(detail=False, methods=['post'], url_path='story/(?P<story_id>[\d]+)')
     def create_bookmark(self, request, story_id):
+        """
+        Bookmark the current story for the authenticated user
+        """
         data = {
             'story': story_id,
             'user': request.user.id,
