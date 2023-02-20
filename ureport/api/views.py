@@ -21,13 +21,16 @@ from ureport.api.serializers import (
     PollReadSerializer,
     StoryReadSerializer,
     VideoReadSerializer,
-    StoryBookmarkSerializer,
-    StoryRatingSerializer,
 )
 from ureport.assets.models import Image
 from ureport.news.models import NewsItem, Video
 from ureport.polls.models import Poll
-from ureport.storyextras.models import StoryBookmark, StoryRating
+from ureport.storyextras.models import (
+    StoryBookmark, 
+    StoryRating,
+    StoryRead,
+    StoryReward,
+)
 
 
 class OrgList(ListAPIView):

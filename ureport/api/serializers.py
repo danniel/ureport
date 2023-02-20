@@ -16,8 +16,6 @@ from ureport.assets.models import Image
 from ureport.news.models import NewsItem, Video
 from ureport.polls.models import Poll
 
-from ureport.storyextras.models import StoryBookmark, StoryRating
-
 
 def generate_absolute_url_from_file(request, file, thumbnail_geometry):
     thumnail = get_thumbnail(file, thumbnail_geometry, crop="center", quality=99)
@@ -296,15 +294,3 @@ class CategoryExtendedReadSerializer(CategoryReadSerializer):
     class Meta:
         model = Category
         fields = ("image_url", "name", "created_on", "modified_on", "stories")
-
-
-class StoryBookmarkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StoryBookmark
-        fields = ("story", "user", )
-
-
-class StoryRatingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StoryRating
-        fields = ("story", "user", "score", )
