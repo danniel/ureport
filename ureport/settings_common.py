@@ -728,6 +728,7 @@ INSTALLED_APPS = (
     "hamlpy",
 
     # custom extra apps:
+    "rest_framework.authtoken",
     "ureport.storyextras",
     "ureport.userbadges",
     "ureport.userprofiles",
@@ -1833,6 +1834,9 @@ REST_FRAMEWORK = {
     "MAX_PAGINATE_BY": 100,
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ]
 }
 
 
