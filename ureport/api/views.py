@@ -25,12 +25,6 @@ from ureport.api.serializers import (
 from ureport.assets.models import Image
 from ureport.news.models import NewsItem, Video
 from ureport.polls.models import Poll
-from ureport.storyextras.models import (
-    StoryBookmark, 
-    StoryRating,
-    StoryRead,
-    StoryReward,
-)
 
 
 class OrgList(ListAPIView):
@@ -979,18 +973,6 @@ class StoryDetails(RetrieveAPIView):
 
     serializer_class = StoryReadSerializer
     queryset = Story.objects.filter(is_active=True).filter(Q(attachment="") | Q(attachment=None))
-
-    @action(detail=True, methods=['get'])
-    def bookmarks(self, request):
-        story = self.get_object()
-        bmarks = StoryBookmark.objects.filter(story=story).all()
-        page = self.paginate_queryset(bmarks)
-        if page is not None:
-            serializer = StoryBookmarkSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = StoryBookmarkSerializer(bmarks, many=True)
-        return Response(serializer.data)
 
 
 class DashBlockList(BaseListAPIView):
