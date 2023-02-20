@@ -11,7 +11,7 @@ class StorySettings(models.Model):
     
     story = models.OneToOneField(
         Story,
-        verbose_name=_("Story"))
+        verbose_name=_("Story"), on_delete=models.CASCADE)
     reward_points = models.PositiveSmallIntegerField(
         verbose_name=_("Reward points"),
         default=0, blank=False, null=False)
