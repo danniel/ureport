@@ -25,6 +25,10 @@ from ureport.api.views import (
     VideoDetails,
     VideoList,
 )
+from ureport.storyextras.views import (
+    UserStoryBookmarkList,
+    StoryBookmarkList,
+)
 
 schema_view = get_swagger_view(title="API")
 
@@ -50,5 +54,6 @@ urlpatterns = [
     # API extension:
     re_path(r"^categories/org/(?P<org>[\d]+)/$", CategoryList.as_view(), name="api.v1.org_category_list"),
     re_path(r"^categories/(?P<pk>[\d]+)/$", CategoryDetails.as_view(), name="api.v1.category_details"),
-
+    re_path(r"^storybookmarks/story/(?P<story>[\d]+)/$", StoryBookmarkList.as_view(), name="api.v1.story_storybookmark_list"),
+    re_path(r"^storybookmarks/user/(?P<user>[\d]+)/$", UserStoryBookmarkList.as_view(), name="api.v1.user_storybookmark_list"),
 ]

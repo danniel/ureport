@@ -14,6 +14,12 @@ class StoryBookmarkSerializer(serializers.ModelSerializer):
         fields = ("story", "user", )
 
 
+class StoryBookmarkForUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoryBookmark
+        fields = ("story", )
+
+
 class StoryRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryRating
