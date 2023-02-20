@@ -1,99 +1,69 @@
-from django.shortcuts import render
+from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.generics import (
-    ListAPIView, 
-    ListCreateAPIView, 
-    RetrieveAPIView,
-)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
+from ureport.storyextras.models import (
+    StoryBookmark, 
+    StoryRating, 
+    StoryRead, 
+    StoryReward,
+)
 from ureport.storyextras.serializers import (
-    StoryBookmarkSerializer,
+    StoryBookmarkForStorySerializer,
     StoryBookmarkForUserSerializer,
+    StoryBookmarkSerializer,
     StoryRatingSerializer,
     StoryReadActionSerializer,
     StoryRewardSerializer,
 )
-from ureport.storyextras.models import (
-    StoryBookmark, 
-    StoryRating,
-    StoryRead,
-    StoryReward,
-)
 
 
-class PerUserListAPIView(ListAPIView):
-    def get_queryset(self):
-        q = self.model.objects.filter(user_id=self.kwargs.get("user"))
-        return q
-
-
-class PerStoryListCreateAPIView(ListCreateAPIView):
-    # permission_classes = [IsAuthenticatedOrReadOnly, ]
-
-    def get_queryset(self):
-        q = self.model.objects.filter(story_id=self.kwargs.get("story"))
-        return q
-
-
-class UserStoryBookmarkList(PerUserListAPIView):
+class StoryBookmarkViewSet(ModelViewSet):
     """
-    This endpoint allows you to list the bookmarks of an user.
-
-    ## Listing story bookmarks
-
-    By making a ```GET``` request you can list all the bookmarks for an user
-
-    Example:
-
-        GET /api/v1/storybookmarks/user/1/
+    This endpoint allows you to manage the story bookmarks
 
     """
     
     serializer_class = StoryBookmarkSerializer
+    queryset = StoryBookmark.objects.all()
     model = StoryBookmark
+    # TODO: permissions
+    # permission_classes = []
 
+    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
+    def list_for_user(self, request, user_id):
+        queryset = self.model.objects.filter(user_id=user_id)
+        serializer_context = {"request": request}
+        serializer = StoryBookmarkForUserSerializer(queryset, many=True, context=serializer_context)
+        return Response(serializer.data)
 
-class StoryBookmarkList(PerStoryListCreateAPIView):
-    """
-    This endpoint allows you to list the bookmarks of a story.
+    @action(detail=False, methods=['get'], url_path='story/(?P<story_id>[\d]+)')
+    def list_for_story(self, request, story_id):
+        queryset = self.model.objects.filter(story_id=story_id)
+        serializer = StoryBookmarkForStorySerializer(queryset, many=True)
+        return Response(serializer.data)
 
-    ## Listing story bookmarks
+    @action(detail=False, methods=['delete'], url_path='story/(?P<story_id>[\d]+)')
+    def remove_bookmark(self, request, story_id):
+        count = StoryBookmark.objects.filter(
+            story_id=story_id,
+            user=request.user.id
+        ).delete()
+        return Response({"count": count})
 
-    By making a ```GET``` request you can list all the bookmarks for a story
+    @action(detail=False, methods=['post'], url_path='story/(?P<story_id>[\d]+)')
+    def create_bookmark(self, request, story_id):
+        data = {
+            'story_id': story_id,
+            'user_id': request.user.id,
+        }
+        serializer = StoryBookmarkForStorySerializer(data=data)
 
-    Example:
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        GET /api/v1/storybookmarks/story/1/
-
-
-    ## Creating story bookmarks
-
-    By making a ```POST``` request you can add a story bookmark for the current user
-
-    Example:
-
-        POST /api/v1/storybookmarks/story/1/
-
-    """
-    
-    serializer_class = StoryBookmarkForUserSerializer
-    model = StoryBookmark
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-
-# @action(detail=True, methods=['get'])
-# def bookmarks(self, request):
-#     story = self.get_object()
-#     bmarks = StoryBookmark.objects.filter(story=story).all()
-#     page = self.paginate_queryset(bmarks)
-#     if page is not None:
-#         serializer = StoryBookmarkSerializer(page, many=True)
-#         return self.get_paginated_response(serializer.data)
-
-#     serializer = StoryBookmarkSerializer(bmarks, many=True)
-#     return Response(serializer.data)

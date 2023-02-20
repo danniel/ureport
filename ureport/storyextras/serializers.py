@@ -14,10 +14,19 @@ class StoryBookmarkSerializer(serializers.ModelSerializer):
         fields = ("story", "user", )
 
 
-class StoryBookmarkForUserSerializer(serializers.ModelSerializer):
+class StoryBookmarkForStorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoryBookmark
+        fields = ("user", )
+
+
+class StoryBookmarkForUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = StoryBookmark
         fields = ("story", )
+        extra_kwargs = {
+            "story": {"lookup_field": "pk", "view_name": "api.v1.story_details"}
+        }
 
 
 class StoryRatingSerializer(serializers.ModelSerializer):
