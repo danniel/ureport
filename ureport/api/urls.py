@@ -58,12 +58,22 @@ urlpatterns = [
 
     # StoryBookmarks API
     re_path(
-        r"^storybookmarks/(?P<pk>[\d]+)/$", 
+        r"^storybookmarks/$", 
         StoryBookmarkViewSet.as_view({
             "get": "list", 
             "post": "create",
         }), 
         name="api.v1.storybookmarks_list"
+    ),
+    re_path(
+        r"^storybookmarks/(?P<pk>[\d]+)/$", 
+        StoryBookmarkViewSet.as_view({
+            "get": "retrieve",
+            # "put": "update",
+            # "patch": "partial_update",
+            "delete": "destroy",
+        }), 
+        name="api.v1.storybookmarks_detail"
     ),
     re_path(
         r"^storybookmarks/user/(?P<user_id>[\d]+)/$",

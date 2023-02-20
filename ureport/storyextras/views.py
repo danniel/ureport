@@ -24,6 +24,18 @@ class StoryBookmarkViewSet(ModelViewSet):
     """
     This endpoint allows you to manage the story bookmarks
 
+    ## TODO
+
+    Example:
+
+        GET /api/v1/storyextras/1/
+
+    Response is TODO:
+
+        {
+            "org": 1,
+            "name": "Image name"
+        }
     """
     
     serializer_class = StoryBookmarkSerializer
