@@ -726,10 +726,13 @@ INSTALLED_APPS = (
     "rest_framework",
     "rest_framework_swagger",
     "hamlpy",
+
     # custom extra apps:
     "ureport.storyextras",
+    "ureport.userbadges",
     "ureport.userprofiles",
 )
+
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
