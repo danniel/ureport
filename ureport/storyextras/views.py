@@ -49,17 +49,17 @@ class StoryBookmarkViewSet(ModelViewSet):
     def remove_bookmark(self, request, story_id):
         count = StoryBookmark.objects.filter(
             story_id=story_id,
-            user=request.user.id
+            user_id=request.user.id
         ).delete()
-        return Response({"count": count})
+        return Response({"count": count[0]})
 
     @action(detail=False, methods=['post'], url_path='story/(?P<story_id>[\d]+)')
     def create_bookmark(self, request, story_id):
         data = {
-            'story_id': story_id,
-            'user_id': request.user.id,
+            'story': story_id,
+            'user': request.user.id,
         }
-        serializer = StoryBookmarkForStorySerializer(data=data)
+        serializer = StoryBookmarkSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
