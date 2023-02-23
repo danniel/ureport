@@ -23,19 +23,6 @@ from ureport.storyextras.serializers import (
 class StoryBookmarkViewSet(ModelViewSet):
     """
     This endpoint allows you to manage the story bookmarks
-
-    ## TODO
-
-    Example:
-
-        GET /api/v1/storyextras/1/
-
-    Response is TODO:
-
-        {
-            "org": 1,
-            "name": "Image name"
-        }
     """
     
     serializer_class = StoryBookmarkSerializer
@@ -47,7 +34,7 @@ class StoryBookmarkViewSet(ModelViewSet):
     @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
     def list_for_user(self, request, user_id):
         """
-        List all bookmarked stories for the URL user
+        List all bookmarked stories for the user id specified in URL
         """
         queryset = self.model.objects.filter(user_id=user_id)
         serializer_context = {"request": request}
@@ -57,7 +44,7 @@ class StoryBookmarkViewSet(ModelViewSet):
     @action(detail=False, methods=['get'], url_path='story/(?P<story_id>[\d]+)')
     def list_for_story(self, request, story_id):
         """
-        List all bookmark users for the URL story
+        List all bookmark users for the story id specified in URL
         """
         queryset = self.model.objects.filter(story_id=story_id)
         serializer = StoryBookmarkForStorySerializer(queryset, many=True)
