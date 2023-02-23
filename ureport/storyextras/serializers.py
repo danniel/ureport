@@ -35,6 +35,21 @@ class StoryRatingSerializer(serializers.ModelSerializer):
         fields = ("story", "user", "score", )
 
 
+class StoryRatingForStorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoryRating
+        fields = ("user", "score", )
+
+
+class StoryRatingForUserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StoryRating
+        fields = ("story", "score", )
+        extra_kwargs = {
+            "story": {"lookup_field": "pk", "view_name": "api.v1.story_details"}
+        }
+
+
 class StoryReadActionSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryRead

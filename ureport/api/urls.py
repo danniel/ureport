@@ -27,6 +27,7 @@ from ureport.api.views import (
 )
 from ureport.storyextras.views import (
     StoryBookmarkViewSet,
+    StoryRatingViewSet,
 )
 
 
@@ -90,6 +91,41 @@ urlpatterns = [
             "delete": "remove_bookmark",
         }), 
         name="api.v1.storybookmarks_for_story"
+    ),
+
+    # StoryBookmarks API
+    re_path(
+        r"^storyratings/$", 
+        StoryRatingViewSet.as_view({
+            "get": "list", 
+            "post": "create",
+        }), 
+        name="api.v1.storyratings_list"
+    ),
+    re_path(
+        r"^storyratings/(?P<pk>[\d]+)/$", 
+        StoryRatingViewSet.as_view({
+            "get": "retrieve",
+            # "put": "update",
+            # "patch": "partial_update",
+            "delete": "destroy",
+        }), 
+        name="api.v1.storyratings_detail"
+    ),
+    re_path(
+        r"^storyratings/user/(?P<user_id>[\d]+)/$",
+        StoryRatingViewSet.as_view({
+            "get": "list_for_user"
+        }), 
+        name="api.v1.storyratings_for_user"
+    ),
+    re_path(
+        r"^storyratings/story/(?P<story_id>[\d]+)/$", 
+        StoryRatingViewSet.as_view({
+            "get": "list_for_story",
+            "post": "set_rating",
+        }), 
+        name="api.v1.storyratings_for_story"
     ),
 
 ]
