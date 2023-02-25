@@ -25,6 +25,13 @@ from ureport.storyextras.serializers import (
 class StoryBookmarkViewSet(ModelViewSet):
     """
     This endpoint allows you to manage the story bookmarks
+
+
+    Query filters:
+
+    * **user** - the ID of the user that set the bookmark (int)
+    * **story** - the ID of the story for which the bookmark was set (int)
+
     """
     
     serializer_class = StoryBookmarkSerializer
@@ -32,6 +39,18 @@ class StoryBookmarkViewSet(ModelViewSet):
     model = StoryBookmark
     # TODO: permissions
     # permission_classes = []
+
+    def filter_queryset(self, queryset):
+        params = self.request.query_params
+
+        user_id = params.get("user")
+        story_id = params.get("story")
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        if story_id:
+            queryset = queryset.filter(story_id=story_id)
+
+        return queryset
 
     # @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
     # def list_for_user(self, request, user_id):
@@ -83,7 +102,14 @@ class StoryBookmarkViewSet(ModelViewSet):
 
 class StoryRatingViewSet(ModelViewSet):
     """
-    This endpoint allows you to manage the story ratings TODO
+    This endpoint allows you to manage the story ratings
+
+
+    Query filters:
+
+    * **user** - the ID of the user that set the rating (int)
+    * **story** - the ID of the story for which the rating was set (int)
+
     """
     
     serializer_class = StoryRatingSerializer
@@ -91,6 +117,18 @@ class StoryRatingViewSet(ModelViewSet):
     model = StoryRating
     # TODO: permissions
     # permission_classes = []
+
+    def filter_queryset(self, queryset):
+        params = self.request.query_params
+
+        user_id = params.get("user")
+        story_id = params.get("story")
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        if story_id:
+            queryset = queryset.filter(story_id=story_id)
+
+        return queryset
 
     # @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
     # def list_for_user(self, request, user_id):
