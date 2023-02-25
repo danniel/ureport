@@ -33,15 +33,15 @@ class StoryBookmarkViewSet(ModelViewSet):
     # TODO: permissions
     # permission_classes = []
 
-    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
-    def list_for_user(self, request, user_id):
-        """
-        List all bookmarked stories for the user id specified in URL
-        """
-        queryset = self.model.objects.filter(user_id=user_id)
-        serializer_context = {"request": request}
-        serializer = StoryBookmarkForUserSerializer(queryset, many=True, context=serializer_context)
-        return Response(serializer.data)
+    # @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
+    # def list_for_user(self, request, user_id):
+    #     """
+    #     List all bookmarked stories for the user id specified in URL
+    #     """
+    #     queryset = self.model.objects.filter(user_id=user_id)
+    #     serializer_context = {"request": request}
+    #     serializer = StoryBookmarkForUserSerializer(queryset, many=True, context=serializer_context)
+    #     return Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='story/(?P<story_id>[\d]+)')
     def list_for_story(self, request, story_id):
@@ -92,15 +92,15 @@ class StoryRatingViewSet(ModelViewSet):
     # TODO: permissions
     # permission_classes = []
 
-    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
-    def list_for_user(self, request, user_id):
-        """
-        List all rated stories for the user id specified in URL
-        """
-        queryset = self.model.objects.filter(user_id=user_id)
-        serializer_context = {"request": request}
-        serializer = StoryRatingForUserSerializer(queryset, many=True, context=serializer_context)
-        return Response(serializer.data)
+    # @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
+    # def list_for_user(self, request, user_id):
+    #     """
+    #     List all rated stories for the user id specified in URL
+    #     """
+    #     queryset = self.model.objects.filter(user_id=user_id)
+    #     serializer_context = {"request": request}
+    #     serializer = StoryRatingForUserSerializer(queryset, many=True, context=serializer_context)
+    #     return Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='story/(?P<story_id>[\d]+)')
     def list_for_story(self, request, story_id):
