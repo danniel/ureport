@@ -19,6 +19,9 @@ from ureport.storyextras.serializers import (
 )
 
 
+USER_STORY_API_PATH = "user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)"
+
+
 class IsOwnerUserOrAdmin(IsAuthenticated):
     """
     Only allow staff members or authenticated users who own the object
@@ -123,7 +126,7 @@ class StoryBookmarkViewSet(ModelViewSet):
     #     serializer = StoryBookmarkForStorySerializer(queryset, many=True)
     #     return Response(serializer.data)
 
-    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)')
+    @action(detail=False, methods=['get'], url_path=USER_STORY_API_PATH)
     def retrieve_bookmarks(self, request, user_id, story_id):
         """
         Get the bookmarks of the current user for the current story
@@ -133,7 +136,7 @@ class StoryBookmarkViewSet(ModelViewSet):
         serializer = StoryBookmarkSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['delete'], url_path='user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)')
+    @action(detail=False, methods=['delete'], url_path=USER_STORY_API_PATH)
     def remove_bookmarks(self, request, user_id, story_id):
         """
         Remove any bookmarks of the current user for the current story
@@ -145,7 +148,7 @@ class StoryBookmarkViewSet(ModelViewSet):
         ).delete()
         return Response({"count": count[0]})
 
-    @action(detail=False, methods=['post'], url_path='user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)')
+    @action(detail=False, methods=['post'], url_path=USER_STORY_API_PATH)
     def create_bookmark(self, request, user_id, story_id):
         """
         Bookmark the current story for the current user
@@ -193,7 +196,7 @@ class StoryRatingViewSet(ModelViewSet):
 
         return queryset
 
-    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)')
+    @action(detail=False, methods=['get'], url_path=USER_STORY_API_PATH)
     def retrieve_ratings(self, request, user_id, story_id):
         """
         Create or update the rating of the current story for the current user
@@ -202,7 +205,7 @@ class StoryRatingViewSet(ModelViewSet):
         serializer = StoryRatingSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['post'], url_path='user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)')
+    @action(detail=False, methods=['post'], url_path=USER_STORY_API_PATH)
     def set_rating(self, request, user_id, story_id):
         """
         Create or update the rating of the current story for the current user
