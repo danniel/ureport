@@ -11,43 +11,43 @@ from ureport.storyextras.models import (
 class StoryBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryBookmark
-        fields = ("story", "user", )
+        fields = ("id", "story", "user", )
 
 
-class StoryBookmarkForStorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StoryBookmark
-        fields = ("user", )
+# class StoryBookmarkForStorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = StoryBookmark
+#         fields = ("user", )
 
 
-class StoryBookmarkForUserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = StoryBookmark
-        fields = ("story", )
-        extra_kwargs = {
-            "story": {"lookup_field": "pk", "view_name": "api.v1.story_details"}
-        }
+# class StoryBookmarkForUserSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = StoryBookmark
+#         fields = ("story", )
+#         extra_kwargs = {
+#             "story": {"lookup_field": "pk", "view_name": "api.v1.story_details"}
+#         }
 
 
 class StoryRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryRating
-        fields = ("story", "user", "score", )
+        fields = ("id", "story", "user", "score", )
 
 
-class StoryRatingForStorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StoryRating
-        fields = ("user", "score", )
+# class StoryRatingForStorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = StoryRating
+#         fields = ("user", "score", )
 
 
-class StoryRatingForUserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = StoryRating
-        fields = ("story", "score", )
-        extra_kwargs = {
-            "story": {"lookup_field": "pk", "view_name": "api.v1.story_details"}
-        }
+# class StoryRatingForUserSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = StoryRating
+#         fields = ("story", "score", )
+#         extra_kwargs = {
+#             "story": {"lookup_field": "pk", "view_name": "api.v1.story_details"}
+#         }
 
 
 class StoryReadActionSerializer(serializers.ModelSerializer):

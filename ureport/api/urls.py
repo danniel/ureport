@@ -76,24 +76,17 @@ urlpatterns = [
         }), 
         name="api.v1.storybookmarks_detail"
     ),
-    # re_path(
-    #     r"^storybookmarks/user/(?P<user_id>[\d]+)/$",
-    #     StoryBookmarkViewSet.as_view({
-    #         "get": "list_for_user"
-    #     }), 
-    #     name="api.v1.storybookmarks_for_user"
-    # ),
     re_path(
-        r"^storybookmarks/story/(?P<story_id>[\d]+)/$", 
+        r"^storybookmarks/user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)/$", 
         StoryBookmarkViewSet.as_view({
-            "get": "list_for_story",
+            "get": "retrieve_bookmarks",
             "post": "create_bookmark",
-            "delete": "remove_bookmark",
+            "delete": "remove_bookmarks",
         }), 
         name="api.v1.storybookmarks_for_story"
     ),
 
-    # StoryBookmarks API
+    # StoryRatings API
     re_path(
         r"^storyratings/$", 
         StoryRatingViewSet.as_view({
@@ -112,17 +105,10 @@ urlpatterns = [
         }), 
         name="api.v1.storyratings_detail"
     ),
-    # re_path(
-    #     r"^storyratings/user/(?P<user_id>[\d]+)/$",
-    #     StoryRatingViewSet.as_view({
-    #         "get": "list_for_user"
-    #     }), 
-    #     name="api.v1.storyratings_for_user"
-    # ),
     re_path(
-        r"^storyratings/story/(?P<story_id>[\d]+)/$", 
+        r"^storyratings/user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)/$",
         StoryRatingViewSet.as_view({
-            "get": "list_for_story",
+            "get": "retrieve_ratings",
             "post": "set_rating",
         }), 
         name="api.v1.storyratings_for_story"
