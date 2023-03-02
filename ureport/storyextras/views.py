@@ -232,7 +232,7 @@ class StoryReadActionViewSet(ModelViewSet):
     """
     
     serializer_class = StoryReadActionSerializer
-    queryset = StoryRating.objects.all()
+    queryset = StoryRead.objects.all()
     model = StoryRead
     permission_classes = [IsOwnerUserOrAdmin]
 
@@ -254,7 +254,7 @@ class StoryReadActionViewSet(ModelViewSet):
         
         queryset = self.model.objects.filter(user_id=user_id)
         filtered_queryset = self.filter_queryset(queryset)
-        serializer = StoryRatingSerializer(filtered_queryset, many=True)
+        serializer = StoryReadActionSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['post'], url_path=USER_API_PATH)
