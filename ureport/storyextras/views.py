@@ -274,3 +274,42 @@ class StoryReadActionViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StoryRewardViewSet(ModelViewSet):
+    """
+    This endpoint allows you to manage the story rewards
+
+
+    Query filters:
+
+    * **user** - the ID of the user that received the reward (int)
+    * **story** - the ID of the story for which the reward was given (int)
+
+    """
+    
+    serializer_class = StoryRewardSerializer
+    queryset = StoryReward.objects.all()
+    model = StoryReward
+    permission_classes = [IsOwnerUserOrAdmin]
+
+    def filter_queryset(self, queryset):
+        user_id = self.request.query_params.get("user")
+        story_id = self.request.query_params.get("story")
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        if story_id:
+            queryset = queryset.filter(story_id=story_id)
+
+        return queryset
+
+    @action(detail=False, methods=['get'], url_path=USER_API_PATH)
+    def retrieve_user_rewards(self, request, user_id):
+        """
+        Get the rewards received by the current user
+        """
+        
+        queryset = self.model.objects.filter(user_id=user_id)
+        filtered_queryset = self.filter_queryset(queryset)
+        serializer = StoryRewardSerializer(filtered_queryset, many=True)
+        return Response(serializer.data)

@@ -29,6 +29,7 @@ from ureport.storyextras.views import (
     StoryBookmarkViewSet,
     StoryRatingViewSet,
     StoryReadActionViewSet,
+    StoryRewardViewSet,
 )
 
 
@@ -141,6 +142,33 @@ urlpatterns = [
             "post": "set_user_read",
         }), 
         name="api.v1.storyreads_for_user"
+    ),
+
+    # StoryRewards API
+    re_path(
+        r"^storyrewards/$", 
+        StoryRewardViewSet.as_view({
+            "get": "list", 
+            "post": "create",
+        }), 
+        name="api.v1.storyrewards_list"
+    ),
+    re_path(
+        r"^storyrewards/(?P<pk>[\d]+)/$", 
+        StoryRewardViewSet.as_view({
+            "get": "retrieve",
+            # "put": "update",
+            # "patch": "partial_update",
+            "delete": "destroy",
+        }), 
+        name="api.v1.storyrewards_detail"
+    ),
+    re_path(
+        r"^storyrewards/user/(?P<user_id>[\d]+)/$",
+        StoryRewardViewSet.as_view({
+            "get": "retrieve_user_rewards",
+        }), 
+        name="api.v1.storyrewards_for_user"
     ),
 
 ]
