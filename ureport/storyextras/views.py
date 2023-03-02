@@ -19,7 +19,9 @@ from ureport.storyextras.serializers import (
 )
 
 
-USER_STORY_API_PATH = "user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)"
+USER_API_PATH = "user/(?P<user_id>[\d]+)"
+STORY_API_PATH = "story/(?P<story_id>[\d]+)"
+USER_STORY_API_PATH = "{}/{}".format(USER_API_PATH, STORY_API_PATH)
 
 
 class IsOwnerUserOrAdmin(IsAuthenticated):
@@ -96,10 +98,8 @@ class StoryBookmarkViewSet(ModelViewSet):
     permission_classes = [IsOwnerUserOrAdmin]
 
     def filter_queryset(self, queryset):
-        params = self.request.query_params
-
-        user_id = params.get("user")
-        story_id = params.get("story")
+        user_id = self.request.query_params.get("user")
+        story_id = self.request.query_params.get("story")
         if user_id:
             queryset = queryset.filter(user_id=user_id)
         if story_id:
@@ -107,55 +107,36 @@ class StoryBookmarkViewSet(ModelViewSet):
 
         return queryset
 
-    # @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[\d]+)')
-    # def list_for_user(self, request, user_id):
-    #     """
-    #     List all bookmarked stories for the user id specified in URL
-    #     """
-    #     queryset = self.model.objects.filter(user_id=user_id)
-    #     serializer_context = {"request": request}
-    #     serializer = StoryBookmarkForUserSerializer(queryset, many=True, context=serializer_context)
-    #     return Response(serializer.data)
-
-    # @action(detail=False, methods=['get'], url_path='story/(?P<story_id>[\d]+)')
-    # def list_for_story(self, request, story_id):
-    #     """
-    #     List all bookmark users for the story id specified in URL
-    #     """
-    #     queryset = self.model.objects.filter(story_id=story_id)
-    #     serializer = StoryBookmarkForStorySerializer(queryset, many=True)
-    #     return Response(serializer.data)
-
-    @action(detail=False, methods=['get'], url_path=USER_STORY_API_PATH)
-    def retrieve_bookmarks(self, request, user_id, story_id):
+    @action(detail=False, methods=['get'], url_path=USER_API_PATH)
+    def retrieve_user_bookmarks(self, request, user_id):
         """
-        Get the bookmarks of the current user for the current story
+        Get the bookmarks for the current user
         """
 
-        queryset = self.model.objects.filter(story_id=story_id, user_id=user_id)
+        queryset = self.filter_queryset(self.model.objects.filter(user_id=user_id))
         serializer = StoryBookmarkSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['delete'], url_path=USER_STORY_API_PATH)
-    def remove_bookmarks(self, request, user_id, story_id):
+    @action(detail=False, methods=['delete'], url_path=USER_API_PATH)
+    def remove_user_bookmarks(self, request, user_id):
         """
-        Remove any bookmarks of the current user for the current story
+        Remove any bookmarks of the current user
         """
 
         count = StoryBookmark.objects.filter(
-            story_id=story_id,
+            story_id=request.data.get("story"),
             user_id=user_id
         ).delete()
         return Response({"count": count[0]})
 
-    @action(detail=False, methods=['post'], url_path=USER_STORY_API_PATH)
-    def create_bookmark(self, request, user_id, story_id):
+    @action(detail=False, methods=['post'], url_path=USER_API_PATH)
+    def create_user_bookmark(self, request, user_id):
         """
-        Bookmark the current story for the current user
+        Bookmark a story for the current user
         """
 
         data = {
-            'story': story_id,
+            'story': request.data.get("story"),
             'user': user_id,
         }
         serializer = StoryBookmarkSerializer(data=data)
@@ -185,6 +166,75 @@ class StoryRatingViewSet(ModelViewSet):
     permission_classes = [IsOwnerUserOrAdmin]
 
     def filter_queryset(self, queryset):
+        user_id = self.request.query_params.get("user")
+        story_id = self.request.query_params.get("story")
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        if story_id:
+            queryset = queryset.filter(story_id=story_id)
+
+        return queryset
+
+    @action(detail=False, methods=['get'], url_path=USER_API_PATH)
+    def retrieve_user_ratings(self, request, user_id):
+        """
+        Create or update the rating of the current story for the current user
+        """
+        queryset = self.filter_queryset(self.model.objects.filter(user_id=user_id))
+        serializer = StoryRatingSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'], url_path=USER_API_PATH)
+    def set_user_rating(self, request, user_id):
+        """
+        Create or update the rating of the current story for the current user
+        """
+        data = {
+            'user': user_id,
+            'story': request.data.get("story"),
+            'score': request.data.get("score"),
+        }
+
+        try:
+            rating = StoryRating.objects.get(
+                user=data["user"],
+                story=data["story"],
+            )
+            serializer = StoryRatingSerializer(rating, data=data, partial=True)
+            created = False
+        except StoryRating.DoesNotExist:
+            serializer = StoryRatingSerializer(data=data)
+            created = True
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if created:
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class StoryReadActionViewSet(ModelViewSet):
+    """
+    This endpoint allows you to manage the story read actions
+
+
+    Query filters:
+
+    * **user** - the ID of the user that set the rating (int)
+    * **story** - the ID of the story for which the rating was set (int)
+
+    """
+    
+    serializer_class = StoryReadActionSerializer
+    queryset = StoryRating.objects.all()
+    model = StoryRead
+    permission_classes = [IsOwnerUserOrAdmin]
+
+    def filter_queryset(self, queryset):
         params = self.request.query_params
 
         user_id = params.get("user")
@@ -196,8 +246,8 @@ class StoryRatingViewSet(ModelViewSet):
 
         return queryset
 
-    @action(detail=False, methods=['get'], url_path=USER_STORY_API_PATH)
-    def retrieve_ratings(self, request, user_id, story_id):
+    @action(detail=False, methods=['get'], url_path=USER_API_PATH)
+    def user_ratings(self, request, user_id):
         """
         Create or update the rating of the current story for the current user
         """
@@ -205,8 +255,8 @@ class StoryRatingViewSet(ModelViewSet):
         serializer = StoryRatingSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['post'], url_path=USER_STORY_API_PATH)
-    def set_rating(self, request, user_id, story_id):
+    @action(detail=False, methods=['post'], url_path=USER_API_PATH)
+    def set_rating(self, request, user_id):
         """
         Create or update the rating of the current story for the current user
         """

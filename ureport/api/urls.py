@@ -77,13 +77,13 @@ urlpatterns = [
         name="api.v1.storybookmarks_detail"
     ),
     re_path(
-        r"^storybookmarks/user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)/$", 
+        r"^storybookmarks/user/(?P<user_id>[\d]+)/$", 
         StoryBookmarkViewSet.as_view({
-            "get": "retrieve_bookmarks",
-            "post": "create_bookmark",
-            "delete": "remove_bookmarks",
+            "get": "retrieve_user_bookmarks",
+            "post": "create_user_bookmark",
+            "delete": "remove_user_bookmarks",
         }), 
-        name="api.v1.storybookmarks_for_story"
+        name="api.v1.storybookmarks_for_user"
     ),
 
     # StoryRatings API
@@ -106,12 +106,47 @@ urlpatterns = [
         name="api.v1.storyratings_detail"
     ),
     re_path(
-        r"^storyratings/user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)/$",
+        r"^storyratings/user/(?P<user_id>[\d]+)/$",
         StoryRatingViewSet.as_view({
-            "get": "retrieve_ratings",
-            "post": "set_rating",
+            "get": "retrieve_user_ratings",
+            "post": "set_user_rating",
         }), 
-        name="api.v1.storyratings_for_story"
+        name="api.v1.storyratings_for_user"
     ),
+
+    # # StoryReads API
+    # re_path(
+    #     r"^storyreads/$", 
+    #     StoryRatingViewSet.as_view({
+    #         "get": "list", 
+    #         "post": "create",
+    #     }), 
+    #     name="api.v1.storyreads_list"
+    # ),
+    # re_path(
+    #     r"^storyreads/(?P<pk>[\d]+)/$", 
+    #     StoryRatingViewSet.as_view({
+    #         "get": "retrieve",
+    #         # "put": "update",
+    #         # "patch": "partial_update",
+    #         "delete": "destroy",
+    #     }), 
+    #     name="api.v1.storyreads_detail"
+    # ),
+    # re_path(
+    #     r"^storyreads/user/(?P<user_id>[\d]+)/$",
+    #     StoryRatingViewSet.as_view({
+    #         "get": "retrieve_reads",
+    #     }), 
+    #     name="api.v1.storyreads_list_for_user"
+    # ),
+    # re_path(
+    #     r"^storyreads/user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)/$",
+    #     StoryRatingViewSet.as_view({
+    #         "get": "retrieve_reads",
+    #         "post": "set_read",
+    #     }), 
+    #     name="api.v1.storyreads_for_user"
+    # ),
 
 ]
