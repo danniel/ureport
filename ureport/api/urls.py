@@ -28,6 +28,7 @@ from ureport.api.views import (
 from ureport.storyextras.views import (
     StoryBookmarkViewSet,
     StoryRatingViewSet,
+    StoryReadActionViewSet,
 )
 
 
@@ -114,39 +115,32 @@ urlpatterns = [
         name="api.v1.storyratings_for_user"
     ),
 
-    # # StoryReads API
-    # re_path(
-    #     r"^storyreads/$", 
-    #     StoryRatingViewSet.as_view({
-    #         "get": "list", 
-    #         "post": "create",
-    #     }), 
-    #     name="api.v1.storyreads_list"
-    # ),
-    # re_path(
-    #     r"^storyreads/(?P<pk>[\d]+)/$", 
-    #     StoryRatingViewSet.as_view({
-    #         "get": "retrieve",
-    #         # "put": "update",
-    #         # "patch": "partial_update",
-    #         "delete": "destroy",
-    #     }), 
-    #     name="api.v1.storyreads_detail"
-    # ),
-    # re_path(
-    #     r"^storyreads/user/(?P<user_id>[\d]+)/$",
-    #     StoryRatingViewSet.as_view({
-    #         "get": "retrieve_reads",
-    #     }), 
-    #     name="api.v1.storyreads_list_for_user"
-    # ),
-    # re_path(
-    #     r"^storyreads/user/(?P<user_id>[\d]+)/story/(?P<story_id>[\d]+)/$",
-    #     StoryRatingViewSet.as_view({
-    #         "get": "retrieve_reads",
-    #         "post": "set_read",
-    #     }), 
-    #     name="api.v1.storyreads_for_user"
-    # ),
+    # StoryReads API
+    re_path(
+        r"^storyreads/$", 
+        StoryReadActionViewSet.as_view({
+            "get": "list", 
+            "post": "create",
+        }), 
+        name="api.v1.storyreads_list"
+    ),
+    re_path(
+        r"^storyreads/(?P<pk>[\d]+)/$", 
+        StoryReadActionViewSet.as_view({
+            "get": "retrieve",
+            # "put": "update",
+            # "patch": "partial_update",
+            "delete": "destroy",
+        }), 
+        name="api.v1.storyreads_detail"
+    ),
+    re_path(
+        r"^storyreads/user/(?P<user_id>[\d]+)/$",
+        StoryReadActionViewSet.as_view({
+            "get": "retrieve_user_reads",
+            "post": "set_user_read",
+        }), 
+        name="api.v1.storyreads_for_user"
+    ),
 
 ]

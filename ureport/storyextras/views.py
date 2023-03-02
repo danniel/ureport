@@ -113,8 +113,9 @@ class StoryBookmarkViewSet(ModelViewSet):
         Get the bookmarks for the current user
         """
 
-        queryset = self.filter_queryset(self.model.objects.filter(user_id=user_id))
-        serializer = StoryBookmarkSerializer(queryset, many=True)
+        queryset = self.model.objects.filter(user_id=user_id)
+        filtered_queryset = self.filter_queryset(queryset)
+        serializer = StoryBookmarkSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['delete'], url_path=USER_API_PATH)
@@ -178,16 +179,17 @@ class StoryRatingViewSet(ModelViewSet):
     @action(detail=False, methods=['get'], url_path=USER_API_PATH)
     def retrieve_user_ratings(self, request, user_id):
         """
-        Create or update the rating of the current story for the current user
+        Get the ratings given by the current user
         """
-        queryset = self.filter_queryset(self.model.objects.filter(user_id=user_id))
-        serializer = StoryRatingSerializer(queryset, many=True)
+        queryset = self.model.objects.filter(user_id=user_id)
+        filtered_queryset = self.filter_queryset(queryset)
+        serializer = StoryRatingSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['post'], url_path=USER_API_PATH)
     def set_user_rating(self, request, user_id):
         """
-        Create or update the rating of the current story for the current user
+        Create or update a rating given by the current user
         """
         data = {
             'user': user_id,
@@ -224,8 +226,8 @@ class StoryReadActionViewSet(ModelViewSet):
 
     Query filters:
 
-    * **user** - the ID of the user that set the rating (int)
-    * **story** - the ID of the story for which the rating was set (int)
+    * **user** - the ID of the user that read the story (int)
+    * **story** - the ID of the story which was read by the user (int)
 
     """
     
@@ -235,10 +237,8 @@ class StoryReadActionViewSet(ModelViewSet):
     permission_classes = [IsOwnerUserOrAdmin]
 
     def filter_queryset(self, queryset):
-        params = self.request.query_params
-
-        user_id = params.get("user")
-        story_id = params.get("story")
+        user_id = self.request.query_params.get("user")
+        story_id = self.request.query_params.get("story")
         if user_id:
             queryset = queryset.filter(user_id=user_id)
         if story_id:
@@ -247,42 +247,30 @@ class StoryReadActionViewSet(ModelViewSet):
         return queryset
 
     @action(detail=False, methods=['get'], url_path=USER_API_PATH)
-    def user_ratings(self, request, user_id):
+    def retrieve_user_reads(self, request, user_id):
         """
-        Create or update the rating of the current story for the current user
+        Get the story reads by the current user
         """
-        queryset = self.model.objects.filter(story_id=story_id, user_id=user_id)
-        serializer = StoryRatingSerializer(queryset, many=True)
+        
+        queryset = self.model.objects.filter(user_id=user_id)
+        filtered_queryset = self.filter_queryset(queryset)
+        serializer = StoryRatingSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['post'], url_path=USER_API_PATH)
-    def set_rating(self, request, user_id):
+    def set_user_read(self, request, user_id):
         """
-        Create or update the rating of the current story for the current user
+        Mark a story as read by the current user
         """
+        
         data = {
-            'story': story_id,
+            'story': request.data.get("story"),
             'user': user_id,
-            'score': request.data.get("score"),
         }
-
-        try:
-            rating = StoryRating.objects.get(
-                user=data["user"],
-                story=data["story"],
-            )
-            serializer = StoryRatingSerializer(rating, data=data, partial=True)
-            created = False
-        except StoryRating.DoesNotExist:
-            serializer = StoryRatingSerializer(data=data)
-            created = True
+        serializer = StoryReadActionSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        if created:
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
