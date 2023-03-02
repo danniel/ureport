@@ -14,12 +14,6 @@ class StoryBookmarkSerializer(serializers.ModelSerializer):
         fields = ("id", "story", "user", )
 
 
-# class StoryBookmarkForStorySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = StoryBookmark
-#         fields = ("user", )
-
-
 # class StoryBookmarkForUserSerializer(serializers.HyperlinkedModelSerializer):
 #     class Meta:
 #         model = StoryBookmark
@@ -35,28 +29,13 @@ class StoryRatingSerializer(serializers.ModelSerializer):
         fields = ("id", "story", "user", "score", )
 
 
-# class StoryRatingForStorySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = StoryRating
-#         fields = ("user", "score", )
-
-
-# class StoryRatingForUserSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = StoryRating
-#         fields = ("story", "score", )
-#         extra_kwargs = {
-#             "story": {"lookup_field": "pk", "view_name": "api.v1.story_details"}
-#         }
-
-
 class StoryReadActionSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryRead
-        fields = ("story", "user", )
+        fields = ("id", "story", "user", )
 
 
 class StoryRewardSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryReward
-        fields = ("story", "user", "points", )
+        fields = ("id", "story", "user", "points", )
