@@ -60,6 +60,7 @@ urlpatterns = [
     re_path(r"^manage/", include("ureport.landingpages.urls")),
     re_path(r"^manage/", include("ureport.countries.urls")),
     re_path(r"^manage/", include("ureport.assets.urls")),
+    re_path(r"^manage/", include("ureport.userbadges.urls")),  # Admin URLs for User Badges
     re_path(r"^users/", include("dash.users.urls")),
     re_path(r"^manage/", include("smartmin.csv_imports.urls")),
     re_path(r"^api/$", RedirectView.as_view(pattern_name="api.v1.docs", permanent=False), name="api"),
