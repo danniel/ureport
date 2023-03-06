@@ -31,6 +31,7 @@ from ureport.storyextras.views import (
     StoryReadActionViewSet,
     StoryRewardViewSet,
 )
+from ureport.userbadges.views import UserBadgeViewSet
 
 
 schema_view = get_swagger_view(title="API")
@@ -171,4 +172,31 @@ urlpatterns = [
         name="api.v1.storyrewards_for_user"
     ),
 
+    # UserBadges API
+    re_path(
+        r"^userbadges/$", 
+        UserBadgeViewSet.as_view({
+            "get": "list", 
+            "post": "create",
+        }), 
+        name="api.v1.userbadges_list"
+    ),
+    re_path(
+        r"^userbadges/(?P<pk>[\d]+)/$", 
+        UserBadgeViewSet.as_view({
+            "get": "retrieve",
+            # "put": "update",
+            # "patch": "partial_update",
+            "delete": "destroy",
+        }), 
+        name="api.v1.userbadges_detail"
+    ),
+    re_path(
+        r"^userbadges/user/(?P<user_id>[\d]+)/$",
+        UserBadgeViewSet.as_view({
+            "get": "retrieve_user_badges",
+            "post": "set_user_badge",
+        }), 
+        name="api.v1.userbadges_for_user"
+    ),
 ]

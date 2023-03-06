@@ -1,21 +1,28 @@
 from dash.orgs.views import OrgPermsMixin, OrgObjPermsMixin
-from django.shortcuts import render
+from django.utils import timezone
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from smartmin.views import (
     SmartCRUDL,
     SmartListView,
     SmartUpdateView,
     SmartCreateView,
 )
-from rest_framework.decorators import action
-from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.response import Response
 
+from ureport.apiextras.views import (
+    IsOwnerUserOrAdmin,
+    STORY_API_PATH, 
+    USER_API_PATH, 
+    USER_STORY_API_PATH,
+)
 from ureport.userbadges.forms import BadgeTypeForm
 from ureport.userbadges.serializers import (
     BadgeTypeSerializer,
     UserBadgeSerializer,
 )
-from ureport.userbadges.models import BadgeType
+from ureport.userbadges.models import BadgeType, UserBadge
    
 
 class BadgeTypeCRUDL(SmartCRUDL):
@@ -48,3 +55,61 @@ class BadgeTypeCRUDL(SmartCRUDL):
                 queryset = queryset.filter(org=self.derive_org())
 
             return queryset
+
+
+class UserBadgeViewSet(ModelViewSet):
+    """
+    This endpoint allows you to manage the user badges
+
+
+    Query filters:
+
+    * **user** - the ID of the user that owns the badge
+    * **org** - the ID of the Org which provides the badge type
+
+    """
+    
+    serializer_class = UserBadgeSerializer
+    queryset = UserBadge.objects.all()
+    model = UserBadge
+    permission_classes = [IsOwnerUserOrAdmin]
+
+    def filter_queryset(self, queryset):
+        user_id = self.request.query_params.get("user")
+        org_id = self.request.query_params.get("org")
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        if org_id:
+            queryset = queryset.filter(badge_type__org=org_id)
+
+        return queryset
+
+    @action(detail=False, methods=['get'], url_path=USER_API_PATH)
+    def retrieve_user_badges(self, request, user_id):
+        """
+        Get the user badges belonging to the current user
+        """
+        
+        queryset = self.model.objects.filter(user_id=user_id)
+        filtered_queryset = self.filter_queryset(queryset)
+        serializer = UserBadgeSerializer(filtered_queryset, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'], url_path=USER_API_PATH)
+    def accept_user_badge(self, request, user_id):
+        """
+        Accept a badge for the current user
+        """
+        
+        data = {
+            'badge': request.data.get("badge"),
+            'user': user_id,
+            'accepted_on': timezone.now(),
+        }
+        serializer = UserBadgeSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

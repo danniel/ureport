@@ -736,6 +736,7 @@ INSTALLED_APPS = (
 
     # custom extra apps:
     "rest_framework.authtoken",
+    "ureport.apiextras",
     "ureport.storyextras",
     "ureport.userbadges",
     "ureport.userprofiles",
