@@ -52,12 +52,12 @@ MANAGERS = ADMINS
 # add gunicorn
 INSTALLED_APPS = INSTALLED_APPS + ('gunicorn', 'storages')
 
-
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', 'MISSING_AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', 'MISSING_AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = 'dl-ureport'
-AWS_S3_SECURE_URLS = True
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+if PRODUCTION:
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', 'MISSING_AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', 'MISSING_AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME=os.getenv('AWS_STORAGE_BUCKET_NAME', '')
+    AWS_S3_SECURE_URLS = True
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # these two settings will cause our aws files to never expire
 # see http://developer.yahoo.com/performance/rules.html#expires
@@ -71,8 +71,9 @@ AWS_S3_OBJECT_PARAMETERS = {
 STATIC_URL = '/sitestatic/'
 COMPRESS_URL = '/sitestatic/'
 
-# our media is all on S3
-MEDIA_URL = 'https://dl-ureport.s3.amazonaws.com/'
+if PRODUCTION:
+    # our media is all on S3
+    MEDIA_URL = 'https://dl-ureport.s3.amazonaws.com/'
 
 # List of finder classes that know how to find static files in
 # various locations.

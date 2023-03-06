@@ -32,6 +32,13 @@ if SENTRY_DSN:  # pragma: no cover
 # -----------------------------------------------------------------------------------
 TESTING = sys.argv[1:2] == ["test"]
 
+
+if os.getenv('PRODUCTION', '').strip().lower() in ["1", "true", "yes"]:
+    PRODUCTION = True
+else:
+    PRODUCTION = False
+
+
 DEBUG = True
 THUMBNAIL_DEBUG = DEBUG
 
