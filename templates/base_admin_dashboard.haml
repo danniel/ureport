@@ -136,13 +136,19 @@
                           %span.menu-link-title
                             - trans "Settings"
 
-                      - if request.user.is_superuser
-                        %li
-                          %a(href="{% url 'orgs.orgbackend_list' %}")
-                            %span.icon
-                              %img(src="{{ STATIC_URL }}img/settings_icon.png")
-                            %span.menu-link-title
-                              - trans "Backends"
+                      %li
+                        %a(href="{% url 'orgs.orgbackend_list' %}")
+                          %span.icon
+                            %img(src="{{ STATIC_URL }}img/settings_icon.png")
+                          %span.menu-link-title
+                            - trans "Backends"
+
+                      %li
+                        %a(href="{% url 'userbadges.badgetype_list' %}")
+                          %span.icon
+                            %img(src="{{ STATIC_URL }}img/settings_icon.png")
+                          %span.menu-link-title
+                            - trans "Badge Types"
 
                       %li
                         %a(href="{% url 'dashblocks.dashblock_list' %}")
