@@ -94,28 +94,3 @@ class UserBadgeViewSet(ModelViewSet):
         filtered_queryset = self.filter_queryset(queryset)
         serializer = UserBadgeSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
-    
-    @action(detail=False, methods=['post'], url_path=USER_API_PATH)
-    def accept_user_badge(self, request, user_id):
-        """
-        Accept a badge for the current user
-        """
-        
-        if request.data.get("accept", True):
-            declined = False
-        else:
-            declined = True
-
-        data = {
-            'badge': request.data.get("badge"),
-            'user': user_id,
-            'accepted_on': timezone.now() if not declined else None,
-            'declined_on': timezone.now() if declined else None,
-        }
-        serializer = UserBadgeAcceptSerializer(data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
