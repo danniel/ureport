@@ -38,7 +38,7 @@ class TempViewSet(ModelViewSet):
         """
         TODO: This is a temporary function which returns the current user id
         """
-        return Response({'id': self.request.user.id})
+        return Response({'id': request.user.id})
 
 
 
