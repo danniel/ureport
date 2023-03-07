@@ -21,6 +21,7 @@ from ureport.userbadges.forms import BadgeTypeForm
 from ureport.userbadges.serializers import (
     BadgeTypeSerializer,
     UserBadgeSerializer,
+    UserBadgeAcceptSerializer,
 )
 from ureport.userbadges.models import BadgeType, UserBadge
    
@@ -101,12 +102,18 @@ class UserBadgeViewSet(ModelViewSet):
         Accept a badge for the current user
         """
         
+        if request.data.get("accept", True):
+            declined = False
+        else:
+            declined = True
+
         data = {
             'badge': request.data.get("badge"),
             'user': user_id,
-            'accepted_on': timezone.now(),
+            'accepted_on': timezone.now() if not declined else None,
+            'declined_on': timezone.now() if declined else None,
         }
-        serializer = UserBadgeSerializer(data=data)
+        serializer = UserBadgeAcceptSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()

@@ -96,6 +96,40 @@ class UserBadge(models.Model):
 
 
 @receiver(models.signals.post_save, sender=StoryRead)
-def create_badge_offer(sender, **kwargs):
-    # TODO
-    print("Someone read a story...")
+def create_badge_offer(sender, read, **kwargs):
+    """
+    When an user has read a story, check if they should receive some badges
+    """
+
+    org = read.story.org
+    category = read.story.category
+    user = read.story.user
+    
+    # Count how many stories the user has read
+    total_reads = StoryRead.objects.filter(
+        user=user, story__org=org).count()
+    total_category_reads = StoryRead.objects.filter(
+        user=user, story__category=category).count()
+
+    # Get user badges
+    current_badge_types = list(
+        UserBadge.objects.filter(user=user).values_list("badge_type__id", flat=True))
+
+    # Get new available badge types
+    new_general_badge_types = BadgeType.visible.filter(
+        item_type="S", org=org, item_category=None, item_count__lte=total_reads
+    ).exclude(id__in=current_badge_types).all()
+    new_category_badge_types = BadgeType.visible.filter(
+        item_type="S", item_category=category, item_count__lte=total_category_reads
+    ).exclude(id__in=current_badge_types).all()
+
+    # Create the badge offers
+    creation_queue = []
+    for badge_type in list(new_general_badge_types)+list(new_category_badge_types):
+        badge = UserBadge(
+            badge_type=badge_type,
+            user=user,
+            offered_on=timezone.now()
+        )
+        creation_queue.append(badge)
+    UserBadge.objects.bulk_create(creation_queue)
