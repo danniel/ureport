@@ -12,4 +12,4 @@ class BadgeTypeSerializer(serializers.ModelSerializer):
 class UserBadgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBadge
-        fields = ("id", "badge_type", "user", "offered_on", "accepted_on", )
+        fields = ("id", "badge_type", "user", "offered_on", "accepted_on", "declined_on")

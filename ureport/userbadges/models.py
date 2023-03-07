@@ -6,8 +6,11 @@ from dash.utils import generate_file_path
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from ureport.storyextras.models import StoryRead
 
 
 ITEM_TYPE_CHOICES = (
@@ -80,6 +83,8 @@ class UserBadge(models.Model):
         verbose_name=_("Date offered"), auto_now_add=timezone.now)
     accepted_on = models.DateTimeField(
         verbose_name=_("Date accepted"), blank=True, null=True)
+    declined_on = models.DateTimeField(
+        verbose_name=_("Date declined"), blank=True, null=True)
 
     objects = models.Manager()
     accepted = AcceptedManager()
@@ -88,3 +93,9 @@ class UserBadge(models.Model):
         verbose_name = _("User badge")
         verbose_name_plural = _("User badges")
         unique_together = ("badge_type", "user")
+
+
+@receiver(models.signals.post_save, sender=StoryRead)
+def create_badge_offer(sender, **kwargs):
+    # TODO
+    print("Someone read a story...")
