@@ -20,6 +20,8 @@ from ureport.storyextras.serializers import (
     StoryReadActionSerializer,
     StoryRewardSerializer,
 )
+from ureport.userbadges.models import create_badge_for_story
+from ureport.userbadges.serializers import UserBadgeSerializer
 
 
 class StoryBookmarkViewSet(ModelViewSet):
@@ -229,7 +231,7 @@ class StoryReadActionViewSet(ModelViewSet):
     @action(detail=False, methods=['post'], url_path=USER_API_PATH)
     def set_user_read(self, request, user_id):
         """
-        Mark a story as read by the current user
+        Mark a story as read by the current user and return any earned badges
         """
         
         data = {
@@ -239,8 +241,22 @@ class StoryReadActionViewSet(ModelViewSet):
         serializer = StoryReadActionSerializer(data=data)
 
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if not StoryRead.objects.filter(story_id=data['story'], user_id=data['user']).exists():
+                read = serializer.save()
+
+                # Count how many stories the user has read
+                total_reads = StoryRead.objects.filter(
+                    user=read.user, story__org=read.story.org).count()
+                category_reads = StoryRead.objects.filter(
+                    user=read.user, story__category=read.story.category).count()
+
+                new_badges = create_badge_for_story(
+                    read.user, read.story.org, read.story.category, total_reads, category_reads)
+            else:
+                new_badges = []
+
+            badges_serializer = UserBadgeSerializer(new_badges, many=True)
+            return Response(badges_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

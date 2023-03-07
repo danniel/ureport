@@ -195,7 +195,6 @@ urlpatterns = [
         r"^userbadges/user/(?P<user_id>[\d]+)/$",
         UserBadgeViewSet.as_view({
             "get": "retrieve_user_badges",
-            "post": "accept_user_badge",
         }), 
         name="api.v1.userbadges_for_user"
     ),

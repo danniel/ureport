@@ -1,4 +1,5 @@
 from functools import partial
+from typing import List
 
 from dash.categories.models import Category
 from dash.orgs.models import Org
@@ -6,11 +7,8 @@ from dash.utils import generate_file_path
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-from ureport.storyextras.models import StoryRead
 
 
 ITEM_TYPE_CHOICES = (
@@ -80,14 +78,8 @@ class UserBadge(models.Model):
         User, verbose_name=_("User"), 
         blank=False, null=False, on_delete=models.CASCADE)
     offered_on = models.DateTimeField(
-        verbose_name=_("Date offered"), auto_now_add=timezone.now)
-    accepted_on = models.DateTimeField(
-        verbose_name=_("Date accepted"), blank=True, null=True)
-    declined_on = models.DateTimeField(
-        verbose_name=_("Date declined"), blank=True, null=True)
-
+        verbose_name=_("Date offered"), auto_now_add=timezone.now, db_index=True)
     objects = models.Manager()
-    accepted = AcceptedManager()
 
     class Meta:
         verbose_name = _("User badge")
@@ -95,21 +87,16 @@ class UserBadge(models.Model):
         unique_together = ("badge_type", "user")
 
 
-@receiver(models.signals.post_save, sender=StoryRead)
-def create_badge_offer(sender, read, **kwargs):
+def create_badge_for_story(
+        user: User, 
+        org: Org, 
+        category: Category, 
+        total_reads: int, 
+        category_reads: int
+    ) -> List[UserBadge]:
     """
     When an user has read a story, check if they should receive some badges
     """
-
-    org = read.story.org
-    category = read.story.category
-    user = read.story.user
-    
-    # Count how many stories the user has read
-    total_reads = StoryRead.objects.filter(
-        user=user, story__org=org).count()
-    total_category_reads = StoryRead.objects.filter(
-        user=user, story__category=category).count()
 
     # Get user badges
     current_badge_types = list(
@@ -120,7 +107,7 @@ def create_badge_offer(sender, read, **kwargs):
         item_type="S", org=org, item_category=None, item_count__lte=total_reads
     ).exclude(id__in=current_badge_types).all()
     new_category_badge_types = BadgeType.visible.filter(
-        item_type="S", item_category=category, item_count__lte=total_category_reads
+        item_type="S", item_category=category, item_count__lte=category_reads
     ).exclude(id__in=current_badge_types).all()
 
     # Create the badge offers
@@ -132,4 +119,7 @@ def create_badge_offer(sender, read, **kwargs):
             offered_on=timezone.now()
         )
         creation_queue.append(badge)
-    UserBadge.objects.bulk_create(creation_queue)
+    
+    # return all new badges    
+    return UserBadge.objects.bulk_create(creation_queue)
+    

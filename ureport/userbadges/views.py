@@ -21,7 +21,6 @@ from ureport.userbadges.forms import BadgeTypeForm
 from ureport.userbadges.serializers import (
     BadgeTypeSerializer,
     UserBadgeSerializer,
-    UserBadgeAcceptSerializer,
 )
 from ureport.userbadges.models import BadgeType, UserBadge
    
