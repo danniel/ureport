@@ -241,20 +241,18 @@ class StoryReadActionViewSet(ModelViewSet):
         serializer = StoryReadActionSerializer(data=data)
 
         if serializer.is_valid():
-            if not StoryRead.objects.filter(story_id=data['story'], user_id=data['user']).exists():
-                read = serializer.save()
+            read = serializer.save()
 
-                # Count how many stories the user has read
-                total_reads = StoryRead.objects.filter(
-                    user=read.user, story__org=read.story.org).count()
-                category_reads = StoryRead.objects.filter(
-                    user=read.user, story__category=read.story.category).count()
+            # Count how many stories the user has read
+            total_reads = StoryRead.objects.filter(
+                user=read.user, story__org=read.story.org).count()
+            category_reads = StoryRead.objects.filter(
+                user=read.user, story__category=read.story.category).count()
 
-                new_badges = create_badge_for_story(
-                    read.user, read.story.org, read.story.category, total_reads, category_reads)
-            else:
-                new_badges = []
+            new_badges = create_badge_for_story(
+                read.user, read.story.org, read.story.category, total_reads, category_reads)
 
+            # show the new badges
             badges_serializer = UserBadgeSerializer(new_badges, many=True)
             return Response(badges_serializer.data, status=status.HTTP_201_CREATED)
         else:
