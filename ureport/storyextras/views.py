@@ -1,5 +1,6 @@
 from rest_framework import status
-from rest_framework.decorators import action, permission_classes
+from rest_framework import permissions
+from rest_framework.decorators import action, permission_classes as pclasses
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
@@ -22,6 +23,23 @@ from ureport.storyextras.serializers import (
 )
 from ureport.userbadges.models import create_badge_for_story
 from ureport.userbadges.serializers import UserBadgeSerializer
+
+
+
+class TempViewSet(ModelViewSet):
+    """ TODO: TEMPORARY """
+    serializer_class = StoryBookmarkSerializer
+    queryset = StoryBookmark.objects.all()
+    model = StoryBookmark
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'], url_path="myid/")
+    def my_user_id(self, request):
+        """
+        TODO: This is a temporary function which returns the current user id
+        """
+        return Response({'id': self.request.user.id})
+
 
 
 class StoryBookmarkViewSet(ModelViewSet):

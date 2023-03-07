@@ -30,6 +30,7 @@ from ureport.storyextras.views import (
     StoryRatingViewSet,
     StoryReadActionViewSet,
     StoryRewardViewSet,
+    TempViewSet,
 )
 from ureport.userbadges.views import UserBadgeViewSet
 
@@ -59,6 +60,14 @@ urlpatterns = [
     # Categories API extension:
     re_path(r"^categories/org/(?P<org>[\d]+)/$", CategoryList.as_view(), name="api.v1.org_category_list"),
     re_path(r"^categories/(?P<pk>[\d]+)/$", CategoryDetails.as_view(), name="api.v1.category_details"),
+
+    re_path(
+        r"^temp/myid/$", 
+        TempViewSet.as_view({
+            "get": "my_user_id",
+        }), 
+        name="api.v1.temp_my_id"
+    ),
 
     # StoryBookmarks API
     re_path(
