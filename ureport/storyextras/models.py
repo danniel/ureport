@@ -1,7 +1,8 @@
 from dash.stories.models import Story
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import models, IntegrityError
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -20,12 +21,22 @@ class StorySettings(models.Model):
     display_rating = models.BooleanField(
         verbose_name=_("Display the user rating"), default=True,
         help_text=_("Display or hide the user rating for this story"))
-    cached_rating = models.DecimalField(
+    rating = models.DecimalField(
+        verbose_name=_("Average rating"),
         max_digits=5, decimal_places=2, default=0, editable=False)
 
     class Meta:
         verbose_name = _("Story settings")
         verbose_name_plural = _("Story settings")
+
+
+@receiver(post_save, sender=Story)
+def auto_create_story_settings(sender, instance, **kwargs):
+    if not StorySettings.objects.filter(story=instance).exists():
+        try:
+            StorySettings.objects.create(story=instance)
+        except IntegrityError:
+            pass
 
 
 class StoryUserModel(models.Model):
@@ -65,6 +76,14 @@ class StoryRating(StoryUserModel):
         verbose_name_plural = _("Story ratings")
         unique_together = ['story', 'user']
 
+
+@receiver(post_save, sender=StoryRating)
+def update_story_average_rating(sender, instance, **kwargs):
+    average = StoryRating.objects.filter(
+        story=instance.story).aggregate(models.Avg('score'))['score__avg']
+    instance.story.storysettings.rating = round(average)
+    instance.story.storysettings.save()
+    
 
 class StoryRead(StoryUserModel):
     """ Save the date when the user first read a story """

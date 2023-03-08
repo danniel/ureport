@@ -20,7 +20,8 @@ urlpatterns = [
     re_path(r"^v2/manage/", include("ureport.admins.urls")),
     re_path(r"^v2/manage/", include("dash.orgs.urls")),
     re_path(r"^v2/manage/", include("dash.dashblocks.urls")),
-    re_path(r"^v2/manage/", include("dash.stories.urls")),
+    re_path(r"^v2/manage/", include("dash.stories.urls")),    # Default story admin
+    # re_path(r"^v2/manage/", include("ureport.storyextras.urls")),  # Custom story admin
     re_path(r"^v2/manage/", include("ureport.polls.urls")),
     re_path(r"^v2/manage/", include("dash.categories.urls")),
     re_path(r"^v2/manage/", include("ureport.news.urls")),
@@ -35,7 +36,8 @@ urlpatterns = [
     re_path(r"^v1/manage/", include("ureport.admins.urls")),
     re_path(r"^v1/manage/", include("dash.orgs.urls")),
     re_path(r"^v1/manage/", include("dash.dashblocks.urls")),
-    re_path(r"^v1/manage/", include("dash.stories.urls")),
+    re_path(r"^v1/manage/", include("dash.stories.urls")),    # Default story admin
+    # re_path(r"^v1/manage/", include("ureport.storyextras.urls")),  # Custom story admin
     re_path(r"^v1/manage/", include("ureport.polls.urls")),
     re_path(r"^v1/manage/", include("dash.categories.urls")),
     re_path(r"^v1/manage/", include("ureport.news.urls")),
@@ -50,7 +52,8 @@ urlpatterns = [
     re_path(r"^manage/", include("ureport.admins.urls")),
     re_path(r"^manage/", include("dash.orgs.urls")),
     re_path(r"^manage/", include("dash.dashblocks.urls")),
-    re_path(r"^manage/", include("dash.stories.urls")),
+    re_path(r"^manage/", include("dash.stories.urls")),    # Default story admin
+    # re_path(r"^manage/", include("ureport.storyextras.urls")),  # Custom story admin
     re_path(r"^manage/", include("ureport.polls.urls")),
     re_path(r"^manage/", include("dash.categories.urls")),
     re_path(r"^manage/", include("dash.tags.urls")),

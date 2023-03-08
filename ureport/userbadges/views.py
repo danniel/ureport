@@ -1,6 +1,4 @@
 from dash.orgs.views import OrgPermsMixin, OrgObjPermsMixin
-from django.utils import timezone
-from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -15,11 +13,9 @@ from ureport.apiextras.views import (
     IsOwnerUserOrAdmin,
     STORY_API_PATH, 
     USER_API_PATH, 
-    USER_STORY_API_PATH,
 )
 from ureport.userbadges.forms import BadgeTypeForm
 from ureport.userbadges.serializers import (
-    BadgeTypeSerializer,
     UserBadgeSerializer,
 )
 from ureport.userbadges.models import BadgeType, UserBadge

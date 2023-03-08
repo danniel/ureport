@@ -1,19 +1,27 @@
+# from django import forms
+from django.http import Http404
+# from dash.categories.fields import CategoryChoiceField
+# from dash.orgs.views import OrgObjPermsMixin
+# from dash.stories.views import StoryCRUDL, StoryForm
+from dash.stories.models import Story, Category
 from rest_framework import status
 from rest_framework import permissions
-from rest_framework.decorators import action, permission_classes as pclasses
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.exceptions import PermissionDenied
+# from smartmin.views import SmartUpdateView
 
 from ureport.apiextras.views import (
     IsOwnerUserOrAdmin,
     USER_API_PATH, 
+    STORY_API_PATH,
 )
 from ureport.storyextras.models import (
     StoryBookmark, 
     StoryRating, 
     StoryRead, 
     StoryReward,
+    StorySettings,
 )
 from ureport.storyextras.serializers import (
     StoryBookmarkSerializer,
@@ -24,14 +32,91 @@ from ureport.storyextras.serializers import (
     StoryReadActionDetailedSerializer,
     StoryRewardSerializer,
     StoryRewardDetailedSerializer,
+    StorySettingsSerializer,
 )
 from ureport.userbadges.models import create_badge_for_story
 from ureport.userbadges.serializers import UserBadgeSerializer
 
 
+# class ExtendedStoryForm(StoryForm):
+#     """
+#     Extend the standard StoryForm to also include the Story Settings
+#     """
+#     # TODO
+#     category = CategoryChoiceField(Category.objects.none())
+
+#     # def __init__(self, *args, **kwargs):
+#     #     self.org = kwargs["org"]
+#     #     del kwargs["org"]
+#     #     super(ExtendedStoryForm, self).__init__(*args, **kwargs)
+
+#     #     # We show all categories even inactive one in the dropdown
+#     #     qs = Category.objects.filter(org=self.org).order_by("name")
+#     #     self.fields["category"].queryset = qs
+
+#     class Meta:
+#         model = Story
+#         fields = (
+#             "is_active",
+#             "title",
+#             "featured",
+#             "summary",
+#             "content",
+#             "attachment",
+#             "written_by",
+#             "audio_link",
+#             "video_id",
+#             "tags",
+#             "category",
+#             "storysettings",
+#         )
+
+
+# class ExtendedStoryCRUDL(StoryCRUDL):
+#     """
+#     Extend the standard StoryCRUDL to also include the Story Settings
+#     """
+#     # TODO
+#     model = Story
+#     actions = ("create", "update", "list", "images")
+
+#     class Update(OrgObjPermsMixin, SmartUpdateView):
+#         form_class = ExtendedStoryForm
+#         fields = (
+#             "is_active",
+#             "title",
+#             "featured",
+#             "summary",
+#             "content",
+#             "attachment",
+#             "written_by",
+#             "audio_link",
+#             "video_id",
+#             "tags",
+#             "category",
+#             "storysettings",
+#         )
+
+#         def pre_save(self, obj):
+#             obj = super(ExtendedStoryCRUDL.Update, self).pre_save(obj)
+#             obj.audio_link = Story.format_audio_link(obj.audio_link)
+#             obj.tags = Story.space_tags(obj.tags)
+#             return obj
+
+#         def get_form_kwargs(self):
+#             kwargs = super(ExtendedStoryCRUDL.Update, self).get_form_kwargs()
+#             kwargs["org"] = self.request.org
+#             return kwargs
+
+#     def url_name_for_action(self, action):
+#         """
+#         Patch the reverse name for this action to match the original "stories"
+#         """
+#         return "%s.%s_%s" % ("stories", self.model_name.lower(), action)
+
 
 class TempViewSet(ModelViewSet):
-    """ TODO: TEMPORARY """
+    """ TODO: REMOVE THIS TEMPORARY ENDPOINT """
     serializer_class = StoryBookmarkSerializer
     queryset = StoryBookmark.objects.all()
     model = StoryBookmark
@@ -43,6 +128,27 @@ class TempViewSet(ModelViewSet):
         TODO: This is a temporary function which returns the current user id
         """
         return Response({'id': request.user.id})
+
+
+class StorySettingsViewSet(ModelViewSet):
+    serializer_class = StorySettingsSerializer
+    queryset = StorySettings.objects.all()
+    model = StorySettings
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    @action(detail=True, methods=['get'], url_path=STORY_API_PATH)
+    def retrieve_settings(self, request, story_id):
+        """
+        Get the settings for the current story
+        """
+        try:
+            story = Story.objects.get(pk=story_id)
+        except Story.DoesNotExist:
+            raise Http404
+
+        settings, _ = StorySettings.objects.get_or_create(story=story)
+        serializer = StorySettingsSerializer(settings, many=False)
+        return Response(serializer.data)
 
 
 

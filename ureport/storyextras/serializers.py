@@ -6,7 +6,14 @@ from ureport.storyextras.models import (
     StoryRating, 
     StoryRead, 
     StoryReward,
+    StorySettings,
 )
+
+
+class StorySettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StorySettings
+        fields = ("display_rating", "rating", )
 
 
 class StoryBookmarkSerializer(serializers.ModelSerializer):

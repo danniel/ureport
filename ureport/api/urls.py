@@ -30,6 +30,7 @@ from ureport.storyextras.views import (
     StoryRatingViewSet,
     StoryReadActionViewSet,
     StoryRewardViewSet,
+    StorySettingsViewSet,
     TempViewSet,
 )
 from ureport.userbadges.views import UserBadgeViewSet
@@ -67,6 +68,15 @@ urlpatterns = [
             "get": "my_user_id",
         }), 
         name="api.v1.temp_my_id"
+    ),
+
+    # StorySettings API
+    re_path(
+        r"^storysettings/story/(?P<story_id>[\d]+)/$", 
+        StorySettingsViewSet.as_view({
+            "get": "retrieve_settings",
+        }), 
+        name="api.v1.storysettings_for_story"
     ),
 
     # StoryBookmarks API
