@@ -17,9 +17,13 @@ from ureport.storyextras.models import (
 )
 from ureport.storyextras.serializers import (
     StoryBookmarkSerializer,
+    StoryBookmarkDetailedSerializer,
     StoryRatingSerializer,
+    StoryRatingDetailedSerializer,
     StoryReadActionSerializer,
+    StoryReadActionDetailedSerializer,
     StoryRewardSerializer,
+    StoryRewardDetailedSerializer,
 )
 from ureport.userbadges.models import create_badge_for_story
 from ureport.userbadges.serializers import UserBadgeSerializer
@@ -104,7 +108,7 @@ class StoryBookmarkViewSet(ModelViewSet):
 
         queryset = self.model.objects.filter(user_id=user_id)
         filtered_queryset = self.filter_queryset(queryset)
-        serializer = StoryBookmarkSerializer(filtered_queryset, many=True)
+        serializer = StoryBookmarkDetailedSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['delete'], url_path=USER_API_PATH)
@@ -132,8 +136,11 @@ class StoryBookmarkViewSet(ModelViewSet):
         serializer = StoryBookmarkSerializer(data=data)
 
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            bookmark = serializer.save()
+            return Response(
+                StoryBookmarkDetailedSerializer(bookmark).data, 
+                status=status.HTTP_201_CREATED
+            )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -172,7 +179,7 @@ class StoryRatingViewSet(ModelViewSet):
         """
         queryset = self.model.objects.filter(user_id=user_id)
         filtered_queryset = self.filter_queryset(queryset)
-        serializer = StoryRatingSerializer(filtered_queryset, many=True)
+        serializer = StoryRatingDetailedSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['post'], url_path=USER_API_PATH)
@@ -198,14 +205,20 @@ class StoryRatingViewSet(ModelViewSet):
             created = True
 
         if serializer.is_valid():
-            serializer.save()
+            rating = serializer.save()
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         if created:
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                StoryRatingDetailedSerializer(rating).data, 
+                status=status.HTTP_201_CREATED
+            )
         else:
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                StoryRatingDetailedSerializer(rating).data, 
+                status=status.HTTP_200_OK
+            )
 
 
 class StoryReadActionViewSet(ModelViewSet):
@@ -243,7 +256,7 @@ class StoryReadActionViewSet(ModelViewSet):
         
         queryset = self.model.objects.filter(user_id=user_id)
         filtered_queryset = self.filter_queryset(queryset)
-        serializer = StoryReadActionSerializer(filtered_queryset, many=True)
+        serializer = StoryReadActionDetailedSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['post'], url_path=USER_API_PATH)
@@ -312,5 +325,5 @@ class StoryRewardViewSet(ModelViewSet):
         
         queryset = self.model.objects.filter(user_id=user_id)
         filtered_queryset = self.filter_queryset(queryset)
-        serializer = StoryRewardSerializer(filtered_queryset, many=True)
+        serializer = StoryRewardDetailedSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
