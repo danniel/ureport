@@ -70,7 +70,7 @@ class UserBadgeViewSet(ModelViewSet):
     """
     
     serializer_class = UserBadgeSerializer
-    queryset = UserBadge.objects.all()
+    queryset = UserBadge.visible.all()
     model = UserBadge
     permission_classes = [IsOwnerUserOrAdmin]
 
@@ -90,7 +90,7 @@ class UserBadgeViewSet(ModelViewSet):
         Get the user badges belonging to the current user
         """
         
-        queryset = self.model.objects.filter(user_id=user_id)
+        queryset = self.get_queryset().filter(user_id=user_id)
         filtered_queryset = self.filter_queryset(queryset)
         serializer = UserBadgeSerializer(filtered_queryset, many=True)
         return Response(serializer.data)

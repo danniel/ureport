@@ -17,18 +17,18 @@ ITEM_TYPE_CHOICES = (
 )
 
 
+class VisibleTypeManager(models.Manager):
+    """ Filter to return only visible items """
+
+    def get_queryset(self):
+        return super().get_queryset().filter(badge_type__is_visible=True)
+
+
 class VisibleManager(models.Manager):
     """ Filter to return only visible items """
 
     def get_queryset(self):
         return super().get_queryset().filter(is_visible=True)
-
-
-class AcceptedManager(models.Manager):
-    """ Filter to return only items which have an accepted_on date """
-
-    def get_queryset(self):
-        return super().get_queryset().filter(accepted_on__isnull=False)
 
 
 class BadgeType(models.Model):
@@ -60,7 +60,6 @@ class BadgeType(models.Model):
         default=10000, blank=False, null=False,
         validators=[MinValueValidator(1), MaxValueValidator(10000)],
         help_text=_("Offer this badge to users who completed this number of items"))
-
     objects = models.Manager()
     visible = VisibleManager()
 
@@ -80,6 +79,7 @@ class UserBadge(models.Model):
     offered_on = models.DateTimeField(
         verbose_name=_("Date offered"), auto_now_add=timezone.now, db_index=True)
     objects = models.Manager()
+    visible = VisibleTypeManager()
 
     class Meta:
         verbose_name = _("User badge")
