@@ -135,14 +135,26 @@ class StoryBookmarkViewSet(ModelViewSet):
         }
         serializer = StoryBookmarkSerializer(data=data)
 
+        try:
+            bookmark = StoryBookmark.objects.get(
+                user=data["user"],
+                story=data["story"],
+            )
+            serializer = StoryBookmarkSerializer(bookmark, data=data, partial=True)
+            created = False
+        except StoryBookmark.DoesNotExist:
+            serializer = StoryBookmarkSerializer(data=data)
+            created = True
+
         if serializer.is_valid():
             bookmark = serializer.save()
-            return Response(
-                StoryBookmarkDetailedSerializer(bookmark).data, 
-                status=status.HTTP_201_CREATED
-            )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(
+            StoryBookmarkDetailedSerializer(bookmark).data, 
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        )
 
 
 class StoryRatingViewSet(ModelViewSet):
@@ -209,16 +221,10 @@ class StoryRatingViewSet(ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if created:
-            return Response(
-                StoryRatingDetailedSerializer(rating).data, 
-                status=status.HTTP_201_CREATED
-            )
-        else:
-            return Response(
-                StoryRatingDetailedSerializer(rating).data, 
-                status=status.HTTP_200_OK
-            )
+        return Response(
+            StoryRatingDetailedSerializer(rating).data, 
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        )
 
 
 class StoryReadActionViewSet(ModelViewSet):
@@ -262,32 +268,45 @@ class StoryReadActionViewSet(ModelViewSet):
     @action(detail=False, methods=['post'], url_path=USER_API_PATH)
     def set_user_read(self, request, user_id):
         """
-        Mark a story as read by the current user and return any earned badges
+        Mark a story as read by the current user and return a list of earned badges (if any)
         """
         
         data = {
             'story': request.data.get("story"),
             'user': user_id,
         }
-        serializer = StoryReadActionSerializer(data=data)
+
+        try:
+            read = StoryRead.objects.get(
+                user=data["user"],
+                story=data["story"],
+            )
+            serializer = StoryReadActionSerializer(read, data=data, partial=True)
+            created = False
+        except StoryRead.DoesNotExist:
+            serializer = StoryReadActionSerializer(data=data)
+            created = True
 
         if serializer.is_valid():
             read = serializer.save()
-
-            # Count how many stories the user has read
-            total_reads = StoryRead.objects.filter(
-                user=read.user, story__org=read.story.org).count()
-            category_reads = StoryRead.objects.filter(
-                user=read.user, story__category=read.story.category).count()
-
-            new_badges = create_badge_for_story(
-                read.user, read.story.org, read.story.category, total_reads, category_reads)
-
-            # show the new badges
-            badges_serializer = UserBadgeSerializer(new_badges, many=True)
-            return Response(badges_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Count how many stories the user has read
+        total_reads = StoryRead.objects.filter(
+            user=read.user, story__org=read.story.org).count()
+        category_reads = StoryRead.objects.filter(
+            user=read.user, story__category=read.story.category).count()
+
+        new_badges = create_badge_for_story(
+            read.user, read.story.org, read.story.category, total_reads, category_reads)
+
+        # show the new badges
+        badges_serializer = UserBadgeSerializer(new_badges, many=True)
+        return Response(
+            badges_serializer.data, 
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        )
 
 
 class StoryRewardViewSet(ModelViewSet):
