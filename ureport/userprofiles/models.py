@@ -34,17 +34,28 @@ class UserProfile(models.Model):
 
     image = models.ImageField(
         verbose_name=_("Image"), 
-        upload_to=partial(generate_file_path, "userprofiles"), 
+        upload_to=partial(generate_file_path, "userprofiles"),
+        blank=True, null=True,
         help_text=_("The profile image file to use"))
+
+    points = models.PositiveIntegerField(
+        verbose_name=_("Points"),
+        default=0, blank=True, null=False, editable=False,
+        help_text=_("Cached computed total points"))
 
     password_reset_code = models.CharField(
         verbose_name=_("Confirmation code"), 
-        max_length=8, blank=True, null=False, default="",
+        max_length=8, blank=True, null=False, default="", editable=False,
         help_text=_("Confirmation code for the password reset"))
 
     password_reset_expiry = models.DateTimeField(
-        verbose_name=_("Expiration date"), blank=True, null=True,
-        help_text=_("Expiration date for the password reset"))
+        verbose_name=_("Expiration date"), blank=True, null=True, editable=False,
+        help_text=_("Expiration date for the password reset code"))
+
+    password_reset_retries = models.PositiveSmallIntegerField(
+        verbose_name=_("Confirmation code retries"), 
+        default=0, blank=True, null=False, editable=False,
+        help_text=_("How many attempts were made for this confirmation code"))
 
     class Meta:
         verbose_name = _("User profile")

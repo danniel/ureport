@@ -23,7 +23,8 @@ class StorySettings(models.Model):
         help_text=_("Display or hide the user rating for this story"))
     rating = models.DecimalField(
         verbose_name=_("Average rating"),
-        max_digits=5, decimal_places=2, default=0, editable=False)
+        max_digits=5, decimal_places=2, default=0, editable=False,
+        help_text=_("Cached computed rating average"))
 
     class Meta:
         verbose_name = _("Story settings")
@@ -99,8 +100,9 @@ class StoryReward(StoryUserModel):
 
     points = models.PositiveSmallIntegerField(
         verbose_name=_("Points"),
-        default=0, blank=False, null=False
-    )
+        default=0, blank=True, null=False,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text=_("How many points will be awarded to the reader"))
 
     class Meta:
         verbose_name = _("Story reward")
