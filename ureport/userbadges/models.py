@@ -39,13 +39,14 @@ class BadgeType(models.Model):
         verbose_name=_("Title"),max_length=50, blank=False, null=False)
     image = models.ImageField(
         verbose_name=_("Image"), 
+        blank=True, null=True,
         upload_to=partial(generate_file_path, "userbadges"), 
-        help_text=_("The badge icon file"))
+        help_text=_("The badge image file"))
     description = models.CharField(
         verbose_name=_("Short description"),
         max_length=250, blank=True, null=False, default="")
     is_visible = models.BooleanField(
-        verbose_name=_("Display this item"),
+        verbose_name=_("Display badges of this type"),
         default=True, db_index=True)
     item_type = models.CharField(
         _("Validation item type"),
