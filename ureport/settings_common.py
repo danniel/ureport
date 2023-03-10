@@ -1837,9 +1837,9 @@ OTHER_ORG_COUNT_SITES = []  # Not used anymore
 # rest_framework config
 # -----------------------------------------------------------------------------------
 REST_FRAMEWORK = {
-    "PAGE_SIZE": 10,  # Default to 10
+    "PAGE_SIZE": 100,  # Default to 10
     "PAGINATE_BY_PARAM": "page_size",  # Allow client to override, using `?page_size=xxx`.
-    "MAX_PAGINATE_BY": 100,
+    "MAX_PAGINATE_BY": 500,
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
