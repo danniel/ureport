@@ -8,7 +8,15 @@ from ureport.userprofiles.models import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ("user", "contact_uuid", "image", )
+        fields = ("contact_uuid", "image", )
+
+
+class UserWithProfileSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer(source='userprofile', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "first_name", "last_name", "profile")
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -68,3 +76,16 @@ class ChangePasswordSerializer(serializers.Serializer):
         self.instance.set_password(self.validated_data["new_password"])
         self.instance.save()
         return self.instance
+
+
+# class ForgotPasswordSerializer(serializers.Serializer):
+#     # TODO:
+#     # The .instance attribute will be the current User
+#     user_id = serializers.IntegerField()
+#     email = serializers.EmailField()
+#     code = serializers.CharField()
+#     new_password = serializers.CharField(max_length=128)
+#     new_password2 = serializers.CharField(max_length=128)
+
+#     def save(self):
+#         pass
