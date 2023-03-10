@@ -45,3 +45,26 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(max_length=128)
+    new_password = serializers.CharField(max_length=128)
+    new_password2 = serializers.CharField(max_length=128)
+
+    def validate(self, data):
+        if not self.instance:
+            raise serializers.ValidationError(_("User does not exist"))
+        
+        if not self.instance.check_password(data["current_password"]):
+            raise serializers.ValidationError(_("Wrong current password"))
+
+        if data["new_password"] != data["new_password2"]:
+            raise serializers.ValidationError(_("The new passwords do not match"))
+        
+        return data
+
+    def save(self):
+        self.instance.set_password(self.validated_data["new_password"])
+        self.instance.save()
+        return self.instance

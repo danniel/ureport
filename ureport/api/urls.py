@@ -34,7 +34,7 @@ from ureport.storyextras.views import (
     TempViewSet,
 )
 from ureport.userbadges.views import UserBadgeViewSet
-from ureport.userprofiles.views import create_user
+from ureport.userprofiles.views import create_user, change_password
 
 
 schema_view = get_swagger_view(title="API")
@@ -224,5 +224,10 @@ urlpatterns = [
         r"^userprofiles/signup/$", 
         create_user, 
         name="api.v1.userprofiles_signup"
+    ),
+    re_path(
+        r"^userprofiles/changepassword/(?P<user_id>[\d]+)/$", 
+        change_password, 
+        name="api.v1.userprofiles_change_password"
     ),
 ]
