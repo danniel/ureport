@@ -34,6 +34,7 @@ from ureport.storyextras.views import (
     TempViewSet,
 )
 from ureport.userbadges.views import UserBadgeViewSet
+from ureport.userprofiles.views import create_user
 
 
 schema_view = get_swagger_view(title="API")
@@ -216,5 +217,12 @@ urlpatterns = [
             "get": "retrieve_user_badges",
         }), 
         name="api.v1.userbadges_for_user"
+    ),
+
+    # UserProfiles API
+    re_path(
+        r"^userprofiles/signup/$", 
+        create_user, 
+        name="api.v1.userprofiles_signup"
     ),
 ]

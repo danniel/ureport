@@ -1,13 +1,14 @@
 from functools import partial
 
 from dash.utils import generate_file_path
-from rest_framework.authtoken.models import Token
+from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from rest_framework.authtoken.models import Token
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -60,3 +61,12 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name = _("User profile")
         verbose_name_plural = _("Use profiles")
+
+
+@receiver(post_save, sender=User)
+def auto_create_user_profile(sender, instance, **kwargs):
+    if not UserProfile.objects.filter(user=instance).exists():
+        try:
+            UserProfile.objects.create(user=instance)
+        except IntegrityError:
+            pass
