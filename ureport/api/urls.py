@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from rest_framework_swagger.views import get_swagger_view
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from django.urls import re_path
 from django.views.generic import RedirectView
@@ -63,10 +64,15 @@ urlpatterns = [
     re_path(r"^stories/org/(?P<org>[\d]+)/$", StoryList.as_view(), name="api.v1.org_story_list"),
     re_path(r"^stories/(?P<pk>[\d]+)/$", StoryDetails.as_view(), name="api.v1.story_details"),
     
+    # Swagger UI for documentation
+    re_path(r"^swagger/schema/", SpectacularAPIView.as_view(), name="api.v1.schema"),
+    re_path(r"^swagger/", SpectacularSwaggerView.as_view(url_name='api.v1.schema'), name='swagger-ui'),
+
     # Categories API extension:
     re_path(r"^categories/org/(?P<org>[\d]+)/$", CategoryList.as_view(), name="api.v1.org_category_list"),
     re_path(r"^categories/(?P<pk>[\d]+)/$", CategoryDetails.as_view(), name="api.v1.category_details"),
-
+    
+    # Temporary endpoint for retrieving the current user's id
     re_path(
         r"^temp/myid/$", 
         TempViewSet.as_view({

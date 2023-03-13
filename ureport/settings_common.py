@@ -734,6 +734,9 @@ INSTALLED_APPS = (
     "rest_framework_swagger",
     "hamlpy",
 
+    # API documentation, because rest_framework_swagger is deprecated
+    "drf_spectacular",
+
     # custom extra apps:
     "rest_framework.authtoken",
     "ureport.apiextras",
@@ -1841,7 +1844,8 @@ REST_FRAMEWORK = {
     "PAGINATE_BY_PARAM": "page_size",  # Allow client to override, using `?page_size=xxx`.
     "MAX_PAGINATE_BY": 500,
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    # "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ]
