@@ -33,7 +33,7 @@ if SENTRY_DSN:  # pragma: no cover
 TESTING = sys.argv[1:2] == ["test"]
 
 
-if os.getenv('PRODUCTION', '').strip().lower() in ["1", "true", "yes"]:
+if os.getenv("PRODUCTION", "").strip().lower() in ["1", "true", "yes"]:
     PRODUCTION = True
 else:
     PRODUCTION = False
@@ -1851,11 +1851,12 @@ REST_FRAMEWORK = {
     ]
 }
 
+# Settings for the new swagger docs
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'UReport Swagger',
-    'DESCRIPTION': 'New documentation for the UReport API',
-    'VERSION': '0.1.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    "TITLE": "UReport Swagger",
+    "DESCRIPTION": "New documentation for the UReport API",
+    "VERSION": "0.1.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 SWAGGER_SETTINGS = {"SECURITY_DEFINITIONS": {"basic": {"type": "basic"}}}

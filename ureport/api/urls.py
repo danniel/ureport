@@ -47,7 +47,7 @@ schema_view = get_swagger_view(title="API")
 
 urlpatterns = [
     re_path(r"^$", RedirectView.as_view(pattern_name="api.v1.docs", permanent=False), name="api.v1"),
-    re_path(r"^docs/", schema_view, name="api.v1.docs"),
+    # re_path(r"^docs/", schema_view, name="api.v1.docs"),  # Obsolete
     re_path(r"^orgs/$", OrgList.as_view(), name="api.v1.org_list"),
     re_path(r"^orgs/(?P<pk>[\d]+)/$", OrgDetails.as_view(), name="api.v1.org_details"),
     re_path(r"^polls/org/(?P<org>[\d]+)/$", PollList.as_view(), name="api.v1.org_poll_list"),
