@@ -1851,6 +1851,12 @@ REST_FRAMEWORK = {
     ]
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'UReport Swagger',
+    'DESCRIPTION': 'New documentation for the UReport API',
+    'VERSION': '0.1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 SWAGGER_SETTINGS = {"SECURITY_DEFINITIONS": {"basic": {"type": "basic"}}}
 
